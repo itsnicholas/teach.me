@@ -41,12 +41,28 @@ def logout():
     del session["username"]
     return redirect("/")
 
-#@app.route("/signup")
-#def signup():
-#    return render_template("signup.html")
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
 
-#@app.route("/signup2", methods=["POST"])
-#def signup2():
-#    username = request.form["username"]
-#    password = request.form["password"]
-#    return redirect("/")
+@app.route("/signup2", methods=["POST"])
+def signup2():
+    username = request.form["username"]
+    password = request.form["password"]
+
+    result = db.session.execute(text("SELECT id FROM users WHERE username = '" +
+                                     username + "';"))
+    print("result", result)
+    user = result.fetchone()
+
+    if user:
+        # username is in use
+        return render_template("signup.html")
+    else:
+        # store username and password
+        hash_value = generate_password_hash(password)
+        db.session.execute(text("INSERT INTO users VALUES (DEFAULT, '" +
+                                username + "', '" + hash_value + "', false);"))
+        db.session.commit()
+
+    return redirect("/")
