@@ -25,7 +25,7 @@ def login():
 
     if not user:
         # invalid username
-        return redirect("/", message="Väärä käyttäjätunnus")
+        return redirect("/")
     else:
         # correct username and password
         hash_value = user.password
@@ -34,7 +34,7 @@ def login():
             return redirect("/")
         else:
             # invalid password
-            return redirect("/", message="Väärä salasana")
+            return redirect("/")
 
 @app.route("/logout")
 def logout():
