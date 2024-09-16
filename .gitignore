@@ -1,0 +1,5 @@
+.env
+__pycache__
+venv
+pg-install.sh
+postgresql-12.15.tar.bz2
