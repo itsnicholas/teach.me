@@ -1,8 +1,14 @@
 {% if session.username %}
+<title>teach.me - Etusivu</title>
+<h1>Etusivu</h1>
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
 <a href="/logout">Kirjaudu ulos</a>
 {% else %}
+<title>teach.me - Luo tili</title>
+<h1>Tervetuloa!</h1>
+<p>Kirjaudu sisään</p>
 <form action="/login" method="POST">
+<p>{{ message }}</p>
 <p>Tunnus:<br>
 <input type="text" name="username" minlength="1" maxlength="16"></p>
 <p>Salasana:<br>

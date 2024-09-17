@@ -1,8 +1,13 @@
-<p>Luo tili</p>
-<form action="/signup2" method="POST">
+<title>teach.me - Luo tili</title>
+<h1>Luo tili</h1>
+<form action="/signup" method="POST">
+<p>{{ message }}</p>
 <p>Tunnus:<br>
 <input type="text" name="username" minlength="1" maxlength="16"></p>
 <p>Salasana:<br>
 <input type="password" name="password" minlength="1" maxlength="16"></p>
 <input type="submit" value="Luo tili">
+</form>
+<form action="/">
+<input type="submit" value="Takaisin">
 </form>

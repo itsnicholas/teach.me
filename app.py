@@ -25,7 +25,7 @@ def login():
 
     if not user:
         # invalid username
-        return redirect("/")
+        return render_template("index.html", message="Käyttäjätunnus on väärä")
     else:
         # correct username and password
         hash_value = user.password
@@ -34,7 +34,7 @@ def login():
             return redirect("/")
         else:
             # invalid password
-            return redirect("/")
+            return render_template("index.html", message="Salasana on väärä")
 
 @app.route("/logout")
 def logout():
@@ -45,7 +45,7 @@ def logout():
 def signup():
     return render_template("signup.html")
 
-@app.route("/signup2", methods=["POST"])
+@app.route("/signup", methods=["POST"])
 def signup2():
     username = request.form["username"]
     password = request.form["password"]
@@ -57,7 +57,7 @@ def signup2():
 
     if user:
         # username is in use
-        return render_template("signup.html")
+        return render_template("signup.html", message="Käyttäjätunnus on käytössä - kokeile toista käyttäjätunnusta")
     else:
         # store username and password
         hash_value = generate_password_hash(password)
