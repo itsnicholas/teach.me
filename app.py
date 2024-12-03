@@ -1,9 +1,10 @@
 from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, request, session, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
+import secrets
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
@@ -40,6 +41,7 @@ def login():
         # correct username and password
         if check_password_hash(hash_value, password):
             session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
 
         # invalid password
@@ -56,6 +58,11 @@ def signup():
 
 @app.route("/signup", methods=["POST"])
 def signup2():
+
+    #if session["csrf_token"] != request.form["csrf_token"]:
+    #    abort(403)
+    #in html: <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
     username = request.form["username"]
     password = request.form["password"]
 
