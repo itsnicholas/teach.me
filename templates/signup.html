@@ -1,4 +1,6 @@
-<title>teach.me - Luo tili</title>
+{% extends "layout.html" %}
+{% block title %}Luo tili{% endblock %}
+{% block content %}
 <h1>Luo tili</h1>
 <form action="/signup" method="POST" onsubmit="return check(this)">
 <p>{{ message }}</p>
@@ -34,3 +36,4 @@ function check(form) {
 <form action="/">
 <input type="submit" value="Takaisin">
 </form>
+{% endblock %}

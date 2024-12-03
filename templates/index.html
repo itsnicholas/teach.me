@@ -1,10 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}
 {% if session.username %}
-<title>teach.me - Etusivu</title>
+Etusivu
+{% else %}
+Luo tili
+{% endif %}
+{% endblock %}
+{% block content %}
+{% if session.username %}
 <h1>Etusivu</h1>
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
 <a href="/logout">Kirjaudu ulos</a>
 {% else %}
-<title>teach.me - Luo tili</title>
 <h1>Tervetuloa!</h1>
 <p>Kirjaudu sisään</p>
 <form action="/login" method="POST" onsubmit="return check(this)">
@@ -23,7 +30,7 @@
             return false;
         }
         if (form.username.value.length < 1) {
-            alert("Tunnus on liian lyhyt");
+            alert("Tunnus on liian lyhyt");content
             return false;
         }
         if (form.password.value.length > 16) {
@@ -42,3 +49,4 @@
 <input type="submit" value="Luo tili">
 </form>
 {% endif %}
+{% endblock %}
