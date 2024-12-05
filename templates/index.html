@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 {% extends "layout.html" %}
 {% block title %}
 {% if session.username %}
@@ -10,6 +11,11 @@ Luo tili
 {% if session.username %}
 <h1>Etusivu</h1>
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
+<hr>
+{% for course in courses %}
+{{ course.name }}
+<hr>
+{% endfor %}
 <a href="/logout">Kirjaudu ulos</a>
 {% else %}
 <h1>Tervetuloa!</h1>

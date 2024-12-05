@@ -13,7 +13,10 @@ db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    sql = text("SELECT name FROM courses;")
+    result = db.session.execute(sql)
+    courses = result.fetchall()
+    return render_template("index.html", courses=courses)
 
 @app.route("/login", methods=["POST"])
 def login():
