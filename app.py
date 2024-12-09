@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
-    sql = text("SELECT name FROM courses;")
+    sql = text("SELECT id, name FROM courses ORDER BY id DESC;")
     result = db.session.execute(sql)
     courses = result.fetchall()
     return render_template("index.html", courses=courses)
@@ -93,3 +93,13 @@ def signup2():
     db.session.commit()
 
     return redirect("/")
+
+@app.route("/course/<int:id>")
+def course(id):
+    sql = text("SELECT name FROM courses WHERE id=:id;")
+    result = db.session.execute(sql, {"id":id})
+    name = result.fetchone()[0]
+    #sql = "SELECT id, choice FROM choices WHERE poll_id=:id"
+    #result = db.session.execute(sql, {"id":id})
+    #choices = result.fetchall()
+    return render_template("course.html", name=name)

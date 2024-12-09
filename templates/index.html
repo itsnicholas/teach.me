@@ -13,7 +13,7 @@ Luo tili
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
 <hr>
 {% for course in courses %}
-{{ course.name }}
+<a href="/course/{{ course.id }}">{{ course.name }}</a>
 <hr>
 {% endfor %}
 <a href="/logout">Kirjaudu ulos</a>
@@ -38,7 +38,7 @@ Luo tili
         if (form.username.value.length < 1) {
             alert("Tunnus on liian lyhyt");content
             return false;
-        }
+        } 
         if (form.password.value.length > 16) {
             alert("Salasana on liian pitkä");
             return false;
