@@ -43,8 +43,11 @@ def login():
         hash_value = user.password
         # correct username and password
         if check_password_hash(hash_value, password):
+            session["id"] = user.id
             session["username"] = username
             session["csrf_token"] = secrets.token_hex(16)
+            #print(user.id, "id numero")
+            #print(user.password, "user password")
             return redirect("/")
 
         # invalid password
@@ -99,7 +102,12 @@ def course(id):
     sql = text("SELECT name FROM courses WHERE id=:id;")
     result = db.session.execute(sql, {"id":id})
     name = result.fetchone()[0]
+    username_id = session["id"]
+    sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:id;")
+    result = db.session.execute(sql, {"username_id":username_id, "id":id})
+    join = result.fetchone()
+    print(join)
     sql = text("SELECT id, material FROM materials WHERE course_id=:id;")
     result = db.session.execute(sql, {"id":id})
     materials = result.fetchall()
-    return render_template("course.html", name=name, materials=materials)
+    return render_template("course.html", name=name, join=join, materials=materials)

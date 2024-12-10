@@ -3,8 +3,14 @@
 {% block title %}{{ name }}{% endblock %}
 {% block content %}
 <h1>{{ name }}</h1>
+{% if join %}
+<h3>Olet ilmoittautunut!</h3>
+{% else %}
+<h3>Ilmoittaudu kurssille tästä</h3>
+{% endif %}
 <hr>
 {% if materials %}
+<h3>Materiaali:</h3>
 {% for material in materials %}
 {{ material.material }}
 <hr>
