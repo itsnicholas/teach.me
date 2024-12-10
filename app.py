@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
-    sql = text("SELECT id, name FROM courses ORDER BY id DESC;")
+    sql = text("SELECT id, name FROM courses ORDER BY id;")
     result = db.session.execute(sql)
     courses = result.fetchall()
     return render_template("index.html", courses=courses)
@@ -84,7 +84,7 @@ def signup2():
 
     if user:
         return render_template("signup.html", message="Käyttäjätunnus on käytössä" +
-                               " - kokeile toista käyttäjätunnusta")
+                               " - kokeile toista käyttäjätunnettu järkevästi osiin moduuleiksi ja funktioiksiusta")
 
     # store username and password
     hash_value = generate_password_hash(password)
@@ -99,7 +99,7 @@ def course(id):
     sql = text("SELECT name FROM courses WHERE id=:id;")
     result = db.session.execute(sql, {"id":id})
     name = result.fetchone()[0]
-    #sql = "SELECT id, choice FROM choices WHERE poll_id=:id"
-    #result = db.session.execute(sql, {"id":id})
-    #choices = result.fetchall()
-    return render_template("course.html", name=name)
+    sql = text("SELECT id, material FROM materials WHERE course_id=:id;")
+    result = db.session.execute(sql, {"id":id})
+    materials = result.fetchall()
+    return render_template("course.html", name=name, materials=materials)

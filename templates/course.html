@@ -3,5 +3,12 @@
 {% block title %}{{ name }}{% endblock %}
 {% block content %}
 <h1>{{ name }}</h1>
+<hr>
+{% if materials %}
+{% for material in materials %}
+{{ material.material }}
+<hr>
+{% endfor %}
+{% endif %}
 <a href="/">Takaisin</a>
 {% endblock %}
