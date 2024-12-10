@@ -6,7 +6,12 @@
 {% if join %}
 <h3>Olet ilmoittautunut!</h3>
 {% else %}
-<h3>Ilmoittaudu kurssille tästä</h3>
+<h3>Ilmoittaudu kurssille:</h3>
+<form action="/enrol" method="POST">
+    <input type="submit" value="Ilmoittaudu">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="id" value="{{ id }}">
+</form>
 {% endif %}
 <hr>
 {% if materials %}

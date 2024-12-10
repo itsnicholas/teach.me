@@ -46,8 +46,6 @@ def login():
             session["id"] = user.id
             session["username"] = username
             session["csrf_token"] = secrets.token_hex(16)
-            #print(user.id, "id numero")
-            #print(user.password, "user password")
             return redirect("/")
 
         # invalid password
@@ -64,11 +62,6 @@ def signup():
 
 @app.route("/signup", methods=["POST"])
 def signup2():
-
-    #if session["csrf_token"] != request.form["csrf_token"]:
-    #    abort(403)
-    #in html: <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-
     username = request.form["username"]
     password = request.form["password"]
 
@@ -106,8 +99,20 @@ def course(id):
     sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:id;")
     result = db.session.execute(sql, {"username_id":username_id, "id":id})
     join = result.fetchone()
-    print(join)
     sql = text("SELECT id, material FROM materials WHERE course_id=:id;")
     result = db.session.execute(sql, {"id":id})
     materials = result.fetchall()
-    return render_template("course.html", name=name, join=join, materials=materials)
+    return render_template("course.html", id=id, name=name, join=join, materials=materials)
+
+@app.route("/enrol", methods=["POST"])
+def enrol():
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    user_id = session["id"]
+    course_id = request.form["id"]
+    sql = text("INSERT INTO userscourses VALUES (DEFAULT, :user_id, :course_id);")
+    db.session.execute(sql, {"user_id":user_id, "course_id":course_id})
+    db.session.commit()
+    return redirect("/course/" + str(course_id))
