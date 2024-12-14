@@ -21,5 +21,13 @@
 <hr>
 {% endfor %}
 {% endif %}
+{% if text_questions %}
+<h3>Tekstikysymykset:</h3>
+{% for text_question in text_questions %}
+{{ text_question.question }}
+<hr>
+{% endfor %}
+{% endif %}
+
 <a href="/">Takaisin</a>
 {% endblock %}

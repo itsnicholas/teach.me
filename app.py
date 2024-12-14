@@ -111,8 +111,12 @@ def course(course_id):
     sql = text("SELECT id, material FROM materials WHERE course_id=:course_id;")
     result = db.session.execute(sql, {"course_id":course_id})
     materials = result.fetchall()
+    sql = text("SELECT id, question FROM textquestions WHERE course_id=:course_id;")
+    result = db.session.execute(sql, {"course_id":course_id})
+    text_questions = result.fetchall()
     return render_template("course.html",
-                           course_id=course_id, name=name, join=join, materials=materials)
+                           course_id=course_id, name=name, join=join, materials=materials,
+                           text_questions=text_questions)
 
 @app.route("/enrol", methods=["POST"])
 def enrol():
