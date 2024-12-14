@@ -10,7 +10,7 @@
 <form action="/enrol" method="POST">
     <input type="submit" value="Ilmoittaudu">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="id" value="{{ id }}">
+    <input type="hidden" name="course_id" value="{{ course_id }}">
 </form>
 {% endif %}
 <hr>

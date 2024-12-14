@@ -1,18 +1,21 @@
+"""Module information."""
+
+from os import getenv
+import secrets
 from flask import Flask
 from flask import redirect, render_template, request, session, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
-from os import getenv
-import secrets
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///xxxxxx" #getenv("DATABASE_URL") problem
 app.secret_key = getenv("SECRET_KEY")
 db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
+    """Function information."""
     sql = text("SELECT id, name FROM courses ORDER BY id;")
     result = db.session.execute(sql)
     courses = result.fetchall()
@@ -20,6 +23,7 @@ def index():
 
 @app.route("/login", methods=["POST"])
 def login():
+    """Function information."""
     username = request.form["username"]
     password = request.form["password"]
 
@@ -53,15 +57,18 @@ def login():
 
 @app.route("/logout")
 def logout():
+    """Function information."""
     del session["username"]
     return redirect("/")
 
 @app.route("/signup")
 def signup():
+    """Function information."""
     return render_template("signup.html")
 
 @app.route("/signup", methods=["POST"])
 def signup2():
+    """Function information."""
     username = request.form["username"]
     password = request.form["password"]
 
@@ -80,7 +87,8 @@ def signup2():
 
     if user:
         return render_template("signup.html", message="Käyttäjätunnus on käytössä" +
-                               " - kokeile toista käyttäjätunnettu järkevästi osiin moduuleiksi ja funktioiksiusta")
+                               " - kokeile toista käyttäjätunnettu järkevästi" +
+                               "osiin moduuleiksi ja funktioiksiusta")
 
     # store username and password
     hash_value = generate_password_hash(password)
@@ -90,28 +98,31 @@ def signup2():
 
     return redirect("/")
 
-@app.route("/course/<int:id>")
-def course(id):
-    sql = text("SELECT name FROM courses WHERE id=:id;")
-    result = db.session.execute(sql, {"id":id})
+@app.route("/course/<int:course_id>")
+def course(course_id):
+    """Function information."""
+    sql = text("SELECT name FROM courses WHERE id=:course_id;")
+    result = db.session.execute(sql, {"course_id":course_id})
     name = result.fetchone()[0]
     username_id = session["id"]
-    sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:id;")
-    result = db.session.execute(sql, {"username_id":username_id, "id":id})
+    sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:course_id;")
+    result = db.session.execute(sql, {"username_id":username_id, "course_id":course_id})
     join = result.fetchone()
-    sql = text("SELECT id, material FROM materials WHERE course_id=:id;")
-    result = db.session.execute(sql, {"id":id})
+    sql = text("SELECT id, material FROM materials WHERE course_id=:course_id;")
+    result = db.session.execute(sql, {"course_id":course_id})
     materials = result.fetchall()
-    return render_template("course.html", id=id, name=name, join=join, materials=materials)
+    return render_template("course.html",
+                           course_id=course_id, name=name, join=join, materials=materials)
 
 @app.route("/enrol", methods=["POST"])
 def enrol():
+    """Function information."""
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
     user_id = session["id"]
-    course_id = request.form["id"]
+    course_id = request.form["course_id"]
     sql = text("INSERT INTO userscourses VALUES (DEFAULT, :user_id, :course_id);")
     db.session.execute(sql, {"user_id":user_id, "course_id":course_id})
     db.session.commit()
