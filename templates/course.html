@@ -37,5 +37,13 @@
 {% endfor %}
 {% endif %}
 
+{% if multiple_choice_questions %}
+<h3>Monivalintakysymykset:</h3>
+{% for multiple_choice_question in multiple_choice_questions %}
+{{ multiple_choice_question.question }}
+<hr>
+{% endfor %}
+{% endif %}
+
 <a href="/">Takaisin</a>
 {% endblock %}
