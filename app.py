@@ -3,7 +3,7 @@
 from os import getenv
 import secrets
 from flask import Flask
-from flask import redirect, render_template, request, session, abort
+from flask import redirect, render_template, request, session, abort, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -87,8 +87,7 @@ def signup2():
 
     if user:
         return render_template("signup.html", message="Käyttäjätunnus on käytössä" +
-                               " - kokeile toista käyttäjätunnettu järkevästi" +
-                               "osiin moduuleiksi ja funktioiksiusta")
+                               " - kokeile toista käyttäjätunnusta")
 
     # store username and password
     hash_value = generate_password_hash(password)
@@ -131,3 +130,40 @@ def enrol():
     db.session.execute(sql, {"user_id":user_id, "course_id":course_id})
     db.session.commit()
     return redirect("/course/" + str(course_id))
+
+@app.route("/answer_text_question", methods=["POST"])
+def answer_text_question():
+    """Function information."""
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    text_question_answer = request.form["text_question_answer"]
+    user_id = session["id"]
+    task_id = request.form["task_id"]
+    course_id = request.form["course_id"]
+
+    sql = text("SELECT id, answer FROM textquestions WHERE id=:task_id;")
+    result = db.session.execute(sql, {"task_id":task_id})
+    text_question = result.fetchone()
+
+    print(text_question.answer, "- text_question.answer")
+    print(text_question_answer, "- text_question_answer")
+
+    if text_question.answer != text_question_answer:
+        flash('Väärä vastaus!')
+        return redirect("/course/" + str(course_id)) #message="Väärä vastaus!")
+
+    sql = text("SELECT id FROM userstasks WHERE user_id=:user_id AND " +
+               "task_id=:task_id AND type=1;")
+    result = db.session.execute(sql, {"user_id":user_id, "task_id":task_id})
+    answer_already = result.fetchone()
+
+    if answer_already:
+        return redirect("/course/" + str(course_id)) #message="Vastasit jo oikein!")
+
+    sql = text("INSERT INTO userstasks VALUES (DEFAULT, :user_id, :task_id, 1);")
+    db.session.execute(sql, {"user_id":user_id, "task_id":task_id})
+    db.session.commit()
+    return redirect("/course/" + str(course_id)) #add error message e.g. ,
+                                                #message="Oikea vastaus!!"?
