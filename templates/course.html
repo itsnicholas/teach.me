@@ -2,7 +2,7 @@
 {% extends "layout.html" %}
 {% block title %}{{ name }}{% endblock %}
 {% block content %}
-<h1>{{ name }}</h1>
+<h1>{{ course_info.name }}</h1>
 {% if join %}
 <h3>Olet ilmoittautunut!</h3>
 {% else %}
@@ -10,7 +10,7 @@
 <form action="/enrol" method="POST">
     <input type="submit" value="Ilmoittaudu">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="course_id" value="{{ course_id }}">
+    <input type="hidden" name="course_id" value="{{ course_info.id }}">
 </form>
 {% endif %}
 <hr>
@@ -24,15 +24,7 @@
 {% if text_questions %}
 <h3>Tekstikysymykset:</h3>
 {% for text_question in text_questions %}
-{{ text_question.question }}
-<form action="/answer_text_question" method="POST">
-    Vastaus: <br>
-    <textarea name="text_question_answer" rows="3" cols="40"></textarea>
-    <input type="submit" value="Lähetä">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="task_id" value="{{ text_question.id }}">
-    <input type="hidden" name="course_id" value="{{ course_id }}">
-</form>
+<a href="/course/{{ course_info.id }}/view/{{ text_question.id }}">{{ text_question.question }}</a>
 <hr>
 {% endfor %}
 {% endif %}
@@ -40,7 +32,7 @@
 {% if multiple_choice_questions %}
 <h3>Monivalintakysymykset:</h3>
 {% for multiple_choice_question in multiple_choice_questions %}
-{{ multiple_choice_question.question }}
+<a href="/course/{{ course_info.id }}/view/{{ multiple_choice_question.id }}">{{ multiple_choice_question.question }}</a>
 <hr>
 {% endfor %}
 {% endif %}

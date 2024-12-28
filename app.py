@@ -100,9 +100,9 @@ def signup2():
 @app.route("/course/<int:course_id>")
 def course(course_id):
     """Function information."""
-    sql = text("SELECT name FROM courses WHERE id=:course_id;")
+    sql = text("SELECT id, name FROM courses WHERE id=:course_id;")
     result = db.session.execute(sql, {"course_id":course_id})
-    name = result.fetchone()[0]
+    course_info = result.fetchone()
     username_id = session["id"]
     sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:course_id;")
     result = db.session.execute(sql, {"username_id":username_id, "course_id":course_id})
@@ -117,9 +117,13 @@ def course(course_id):
     result = db.session.execute(sql, {"course_id":course_id})
     multiple_choice_questions = result.fetchall()
     return render_template("course.html",
-                           course_id=course_id, name=name, join=join, materials=materials,
+                           course_info=course_info, join=join, materials=materials,
                            text_questions=text_questions,
                            multiple_choice_questions = multiple_choice_questions)
+
+#@app.route("/course/<int:course_id>/view/<int:text_question_id>")
+#def view(course_id, text_question_id):
+#    """Function information.""" 
 
 @app.route("/enrol", methods=["POST"])
 def enrol():
