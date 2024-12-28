@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% extends "layout.html" %}
+{% block title %}{{ name }}{% endblock %}
+{% block content %}
+
+{% if questions %}
+<h3>Monivalintakysymykset:</h3>
+{% for question in questions %}
+{{ question.option }}
+<hr>
+{% endfor %}
+{% endif %}
+
+<a href="/course/{{ course_id }}">Takaisin</a>
+{% endblock %}

@@ -21,10 +21,19 @@
 <hr>
 {% endfor %}
 {% endif %}
+
 {% if text_questions %}
 <h3>Tekstikysymykset:</h3>
 {% for text_question in text_questions %}
-<a href="/course/{{ course_info.id }}/view/{{ text_question.id }}">{{ text_question.question }}</a>
+{{ text_question.question }}
+<form action="/answer_text_question" method="POST">
+    Vastaus: <br>
+    <textarea name="text_question_answer" rows="3" cols="40"></textarea>
+    <input type="submit" value="Lähetä">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="task_id" value="{{ text_question.id }}">
+    <input type="hidden" name="course_id" value="{{ course_info.id }}">
+</form>
 <hr>
 {% endfor %}
 {% endif %}
@@ -32,7 +41,7 @@
 {% if multiple_choice_questions %}
 <h3>Monivalintakysymykset:</h3>
 {% for multiple_choice_question in multiple_choice_questions %}
-<a href="/course/{{ course_info.id }}/view/{{ multiple_choice_question.id }}">{{ multiple_choice_question.question }}</a>
+<a href="/course/{{ course_info.id }}/multiple_choice/{{ multiple_choice_question.id }}">{{ multiple_choice_question.question }}</a>
 <hr>
 {% endfor %}
 {% endif %}

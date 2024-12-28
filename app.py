@@ -121,9 +121,15 @@ def course(course_id):
                            text_questions=text_questions,
                            multiple_choice_questions = multiple_choice_questions)
 
-#@app.route("/course/<int:course_id>/view/<int:text_question_id>")
-#def view(course_id, text_question_id):
-#    """Function information.""" 
+@app.route("/course/<int:course_id>/multiple_choice/<int:multiple_choice_question_id>")
+def multiple_choice(course_id, multiple_choice_question_id):
+    """Function information."""
+    sql = text("SELECT id, option FROM multiplechoiceoptions WHERE" +
+    " multiplechoicequestion_id=:multiple_choice_question_id;")
+    result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
+    questions = result.fetchall()
+    return render_template("multiple_choice.html",
+                           course_id=course_id, questions=questions)
 
 @app.route("/enrol", methods=["POST"])
 def enrol():
@@ -154,9 +160,6 @@ def answer_text_question():
     sql = text("SELECT id, answer FROM textquestions WHERE id=:task_id;")
     result = db.session.execute(sql, {"task_id":task_id})
     text_question = result.fetchone()
-
-    print(text_question.answer, "- text_question.answer")
-    print(text_question_answer, "- text_question_answer")
 
     if text_question.answer != text_question_answer:
         flash('Väärä vastaus!')
