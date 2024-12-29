@@ -3,6 +3,7 @@
 {% block title %}{{ name }}{% endblock %}
 {% block content %}
 {{ question.question }}
+<hr>
 <form action="/answer_text_question" method="POST">
     Vastaus: <br>
     <textarea name="text_question_answer" rows="3" cols="40"></textarea>

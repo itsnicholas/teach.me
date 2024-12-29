@@ -4,7 +4,8 @@
 {% block content %}
 
 {% if questions %}
-<h3>Monivalintakysymykset:</h3>
+{{ question_text.question }}
+<hr>
 {% for question in questions %}
 {{ question.option }}
 <hr>

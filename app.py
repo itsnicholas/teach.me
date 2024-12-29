@@ -139,8 +139,14 @@ def text_question(course_id, multiple_choice_question_id):
     " multiplechoicequestion_id=:multiple_choice_question_id;")
     result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
     questions = result.fetchall()
+    sql = text("SELECT question FROM multiplechoicequestions WHERE" +
+    " id=:multiple_choice_question_id;")
+    result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
+    question_text = result.fetchone()
+    print(question_text, "question_text")
     return render_template("multiple_choice.html",
-                           course_id=course_id, questions=questions)
+                           course_id=course_id, questions=questions,
+                           question_text=question_text)
 
 @app.route("/enrol", methods=["POST"])
 def enrol():
