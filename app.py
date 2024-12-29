@@ -121,8 +121,19 @@ def course(course_id):
                            text_questions=text_questions,
                            multiple_choice_questions = multiple_choice_questions)
 
+@app.route("/course/<int:course_id>/text_question/<int:text_question_id>")
+def multiple_choice(course_id, text_question_id):
+    """Function information."""
+    sql = text("SELECT id, course_id, question FROM textquestions WHERE" +
+    " id=:text_question_id;")
+    result = db.session.execute(sql, {"text_question_id":text_question_id})
+    question = result.fetchone()
+    print(question.question, "question.question")
+    return render_template("text_question.html",
+                           course_id=course_id, question=question)
+
 @app.route("/course/<int:course_id>/multiple_choice/<int:multiple_choice_question_id>")
-def multiple_choice(course_id, multiple_choice_question_id):
+def text_question(course_id, multiple_choice_question_id):
     """Function information."""
     sql = text("SELECT id, option FROM multiplechoiceoptions WHERE" +
     " multiplechoicequestion_id=:multiple_choice_question_id;")

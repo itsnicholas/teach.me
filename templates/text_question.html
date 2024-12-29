@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+{% extends "layout.html" %}
+{% block title %}{{ name }}{% endblock %}
+{% block content %}
+{{ question.question }}
+<form action="/answer_text_question" method="POST">
+    Vastaus: <br>
+    <textarea name="text_question_answer" rows="3" cols="40"></textarea>
+    <input type="submit" value="Lähetä">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="task_id" value="{{ question.id }}">
+    <input type="hidden" name="course_id" value="{{ question.course_id }}">
+</form>
+<hr>
+
+<a href="/course/{{ question.course_id }}">Takaisin</a>
+{% endblock %}

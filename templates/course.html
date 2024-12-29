@@ -25,15 +25,7 @@
 {% if text_questions %}
 <h3>Tekstikysymykset:</h3>
 {% for text_question in text_questions %}
-{{ text_question.question }}
-<form action="/answer_text_question" method="POST">
-    Vastaus: <br>
-    <textarea name="text_question_answer" rows="3" cols="40"></textarea>
-    <input type="submit" value="Lähetä">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="task_id" value="{{ text_question.id }}">
-    <input type="hidden" name="course_id" value="{{ course_info.id }}">
-</form>
+<a href="/course/{{ course_info.id }}/text_question/{{ text_question.id }}">{{ text_question.question }}</a>
 <hr>
 {% endfor %}
 {% endif %}
