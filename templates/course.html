@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% extends "layout.html" %}
-{% block title %}{{ name }}{% endblock %}
+{% block title %}{{ course_info.name }}{% endblock %}
 {% block content %}
 <h1>{{ course_info.name }}</h1>
 {% if join %}
@@ -23,19 +23,28 @@
 {% endif %}
 
 {% if text_questions %}
+<h3>Tehdyt tehtävät:</h3>
+
+
 <h3>Tekstikysymykset:</h3>
 {% for text_question in text_questions %}
-<a href="/course/{{ course_info.id }}/text_question/{{ text_question.id }}">{{ text_question.question }}</a>
-<hr>
+{{ text_question.id }}.
+<a href="/course/{{ course_info.id }}/text_question/{{ text_question.id }}">
+{{ text_question.question }}</a>
+<br>
 {% endfor %}
+<hr>
 {% endif %}
 
 {% if multiple_choice_questions %}
 <h3>Monivalintakysymykset:</h3>
 {% for multiple_choice_question in multiple_choice_questions %}
-<a href="/course/{{ course_info.id }}/multiple_choice/{{ multiple_choice_question.id }}">{{ multiple_choice_question.question }}</a>
-<hr>
+{{ multiple_choice_question.id }}.
+<a href="/course/{{ course_info.id }}/multiple_choice/{{ multiple_choice_question.id }}">
+{{ multiple_choice_question.question }}</a>
+<br>
 {% endfor %}
+<hr>
 {% endif %}
 
 <a href="/">Takaisin</a>

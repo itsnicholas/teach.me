@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 {% extends "layout.html" %}
-{% block title %}
-{% if session.username %}
-Etusivu
-{% else %}
-Luo tili
-{% endif %}
-{% endblock %}
+{% block title %}Etusivu{% endblock %}
 {% block content %}
 {% if session.username %}
 <h1>Etusivu</h1>
-<p>Olet kirjautunut nimellä {{ session.username }}</p>
+<p>Olet kirjautunut nimellä <b>{{ session.username }}</b></p>
 <hr>
+<h3>Kurssilista:</h3>
 {% for course in courses %}
+{{ course.id }}.
 <a href="/course/{{ course.id }}">{{ course.name }}</a>
-<hr>
+<br>
 {% endfor %}
+<hr>
 <a href="/logout">Kirjaudu ulos</a>
 {% else %}
 <h1>Tervetuloa!</h1>

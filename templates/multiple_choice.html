@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 {% extends "layout.html" %}
-{% block title %}{{ name }}{% endblock %}
+{% block title %}Monivalintakysymys {{ question.id }}.{% endblock %}
 {% block content %}
 {% if choices %}
+<h3>Monivalintakysymys {{ question.id }}.</h3>
 {{ question.question }}
 <hr>
 <form action="/answer_multiple_choice_question" method="POST">
