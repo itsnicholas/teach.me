@@ -2,6 +2,7 @@
 {% extends "layout.html" %}
 {% block title %}{{ name }}{% endblock %}
 {% block content %}
+{% if question %}
 {{ question.question }}
 <hr>
 <form action="/answer_text_question" method="POST">
@@ -12,7 +13,7 @@
     <input type="hidden" name="task_id" value="{{ question.id }}">
     <input type="hidden" name="course_id" value="{{ question.course_id }}">
 </form>
+{% endif %}
 <hr>
-
 <a href="/course/{{ question.course_id }}">Takaisin</a>
 {% endblock %}

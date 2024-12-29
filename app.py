@@ -138,15 +138,15 @@ def text_question(course_id, multiple_choice_question_id):
     sql = text("SELECT id, option FROM multiplechoiceoptions WHERE" +
     " multiplechoicequestion_id=:multiple_choice_question_id;")
     result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
-    questions = result.fetchall()
-    sql = text("SELECT question FROM multiplechoicequestions WHERE" +
+    choices = result.fetchall()
+    sql = text("SELECT id, question FROM multiplechoicequestions WHERE" +
     " id=:multiple_choice_question_id;")
     result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
-    question_text = result.fetchone()
-    print(question_text, "question_text")
+    question = result.fetchone()
+    print(question.question, "question_text")
     return render_template("multiple_choice.html",
-                           course_id=course_id, questions=questions,
-                           question_text=question_text)
+                           course_id=course_id, choices=choices,
+                           question=question)
 
 @app.route("/enrol", methods=["POST"])
 def enrol():
@@ -193,5 +193,45 @@ def answer_text_question():
     sql = text("INSERT INTO userstasks VALUES (DEFAULT, :user_id, :task_id, 1);")
     db.session.execute(sql, {"user_id":user_id, "task_id":task_id})
     db.session.commit()
+    return redirect("/course/" + str(course_id)) #add error message e.g. ,
+                                                #message="Oikea vastaus!!"?
+
+@app.route("/answer_multiple_choice_question", methods=["POST"])
+def answer_multiple_choice_question():
+    """Function information."""
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    multiple_choice_question_answer = request.form["multiple_choice_question_answer"]
+    user_id = session["id"]
+    question_id = request.form["question_id"]
+    course_id = request.form["course_id"]
+
+    sql = text("SELECT id, answer FROM multiplechoicequestions WHERE id=:question_id;")
+    result = db.session.execute(sql, {"question_id":question_id})
+    multiple_choice_question = result.fetchone()
+
+    print(multiple_choice_question.answer, "multiple_choice_question.answer")
+    print(multiple_choice_question_answer, "multiple_choice_question_answer")
+
+    if multiple_choice_question.answer != multiple_choice_question_answer:
+        print("Väärä vastaus")
+        flash('Väärä vastaus!')
+        return redirect("/course/" + str(course_id)) #message="Väärä vastaus!")
+
+    sql = text("SELECT id FROM userstasks WHERE user_id=:user_id AND " +
+               "task_id=:task_id AND type=2;")
+    result = db.session.execute(sql, {"user_id":user_id, "task_id":question_id})
+    answer_already = result.fetchone()
+
+    if answer_already:
+        print("Vastasit jo oikein!")
+        return redirect("/course/" + str(course_id)) #message="Vastasit jo oikein!")
+
+    sql = text("INSERT INTO userstasks VALUES (DEFAULT, :user_id, :task_id, 2);")
+    db.session.execute(sql, {"user_id":user_id, "task_id":question_id})
+    db.session.commit()
+    print("Oikea vastaus lisätty")
     return redirect("/course/" + str(course_id)) #add error message e.g. ,
                                                 #message="Oikea vastaus!!"?
