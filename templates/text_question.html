@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 {% extends "layout.html" %}
-{% block title %}Tekstikysymys {{ question.id }}.{% endblock %}
+{% block title %}Tekstikysymys{% endblock %}
 {% block content %}
 {% if question %}
-<h3>Tekstikysymys {{ question.id }}.</h3>
+<h3>Tekstikysymys</h3>
 {{ question.question }}
 <hr>
 <form action="/answer_text_question" method="POST">

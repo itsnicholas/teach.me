@@ -27,23 +27,25 @@
 
 
 <h3>Tekstikysymykset:</h3>
+<ul>
 {% for text_question in text_questions %}
-{{ text_question.id }}.
-<a href="/course/{{ course_info.id }}/text_question/{{ text_question.id }}">
+<li><a href="/course/{{ course_info.id }}/text_question/{{ text_question.id }}">
 {{ text_question.question }}</a>
-<br>
+<br></li>
 {% endfor %}
+</ul>
 <hr>
 {% endif %}
 
 {% if multiple_choice_questions %}
 <h3>Monivalintakysymykset:</h3>
+<ul>
 {% for multiple_choice_question in multiple_choice_questions %}
-{{ multiple_choice_question.id }}.
-<a href="/course/{{ course_info.id }}/multiple_choice/{{ multiple_choice_question.id }}">
+<li><a href="/course/{{ course_info.id }}/multiple_choice/{{ multiple_choice_question.id }}">
 {{ multiple_choice_question.question }}</a>
-<br>
+<br></li>
 {% endfor %}
+</ul>
 <hr>
 {% endif %}
 
