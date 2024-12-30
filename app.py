@@ -171,27 +171,32 @@ def answer_text_question():
 
     text_question_answer = request.form["text_question_answer"]
     user_id = session["id"]
-    task_id = request.form["task_id"]
+    question_id = request.form["question_id"]
     course_id = request.form["course_id"]
 
-    sql = text("SELECT id, answer FROM textquestions WHERE id=:task_id;")
-    result = db.session.execute(sql, {"task_id":task_id})
+    sql = text("SELECT id, answer FROM textquestions WHERE id=:question_id;")
+    result = db.session.execute(sql, {"question_id":question_id})
     text_question = result.fetchone()
 
     if text_question.answer != text_question_answer:
+        print("Väärä vastaus!")
         flash('Väärä vastaus!')
         return redirect("/course/" + str(course_id)) #message="Väärä vastaus!")
 
-    sql = text("SELECT id FROM userstasks WHERE user_id=:user_id AND " +
-               "task_id=:task_id AND type=1;")
-    result = db.session.execute(sql, {"user_id":user_id, "task_id":task_id})
+    sql = text("SELECT id FROM usersquestions WHERE course_id=:course_id AND " +
+               "user_id=:user_id AND type=1 AND question_id=:question_id;")
+    result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id,
+                                      "question_id":question_id})
     answer_already = result.fetchone()
 
     if answer_already:
+        print("Vastasit jo oikein!")
         return redirect("/course/" + str(course_id)) #message="Vastasit jo oikein!")
 
-    sql = text("INSERT INTO userstasks VALUES (DEFAULT, :user_id, :task_id, 1);")
-    db.session.execute(sql, {"user_id":user_id, "task_id":task_id})
+    sql = text("INSERT INTO usersquestions VALUES (DEFAULT, :course_id, :user_id, " +
+               "1, :question_id);")
+    db.session.execute(sql, {"course_id":course_id, "user_id":user_id,
+                            "question_id":question_id})
     db.session.commit()
     return redirect("/course/" + str(course_id)) #add error message e.g. ,
                                                 #message="Oikea vastaus!!"?
@@ -220,17 +225,20 @@ def answer_multiple_choice_question():
         flash('Väärä vastaus!')
         return redirect("/course/" + str(course_id)) #message="Väärä vastaus!")
 
-    sql = text("SELECT id FROM userstasks WHERE user_id=:user_id AND " +
-               "task_id=:task_id AND type=2;")
-    result = db.session.execute(sql, {"user_id":user_id, "task_id":question_id})
+    sql = text("SELECT id FROM usersquestions WHERE course_id=:course_id AND " +
+               "user_id=:user_id AND type=2 AND question_id=:question_id;")
+    result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id,
+                                      "question_id":question_id})
     answer_already = result.fetchone()
 
     if answer_already:
         print("Vastasit jo oikein!")
         return redirect("/course/" + str(course_id)) #message="Vastasit jo oikein!")
 
-    sql = text("INSERT INTO userstasks VALUES (DEFAULT, :user_id, :task_id, 2);")
-    db.session.execute(sql, {"user_id":user_id, "task_id":question_id})
+    sql = text("INSERT INTO usersquestions VALUES (DEFAULT, :course_id, :user_id, " +
+               "2, :question_id);")
+    db.session.execute(sql, {"course_id":course_id, "user_id":user_id,
+                            "question_id":question_id})
     db.session.commit()
     print("Oikea vastaus lisätty")
     return redirect("/course/" + str(course_id)) #add error message e.g. ,
