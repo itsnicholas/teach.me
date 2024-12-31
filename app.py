@@ -36,7 +36,7 @@ def login():
     if len(password) < 8:
         return render_template("index.html", error="Salasana on liian lyhyt")
 
-    sql = text("SELECT id, password FROM users WHERE username =:username;")
+    sql = text("SELECT id, password FROM users WHERE username=:username;")
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()
 
@@ -81,7 +81,7 @@ def signup2():
     if len(password) < 8:
         return render_template("signup.html", error="Salasana on liian lyhyt")
 
-    sql = text("SELECT id, password FROM users WHERE username =:username;")
+    sql = text("SELECT id, password FROM users WHERE username=:username;")
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()
 
@@ -116,10 +116,25 @@ def course(course_id):
     sql = text("SELECT id, question FROM multiplechoicequestions WHERE course_id=:course_id;")
     result = db.session.execute(sql, {"course_id":course_id})
     multiple_choice_questions = result.fetchall()
+    sql = text("SELECT t.question FROM textquestions t, usersquestions u " +
+    "WHERE t.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND u.type=1;")
+    result = db.session.execute(sql, {"course_id":course_id, "user_id":username_id})
+    text_question_answers = result.fetchall()
+    sql = text("SELECT m.question FROM multiplechoicequestions m, usersquestions u " +
+    "WHERE m.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND u.type=2;")
+    result = db.session.execute(sql, {"course_id":course_id, "user_id":username_id})
+    multiplec_question_answers = result.fetchall()
     return render_template("course.html",
                            course_info=course_info, join=join, materials=materials,
-                           text_questions=text_questions,
-                           multiple_choice_questions = multiple_choice_questions)
+                           text_questions=text_questions, text_questions_total=
+                           len(text_questions),
+                           text_question_answers=text_question_answers,
+                           text_question_answers_total=len(text_question_answers),
+                           multiple_choice_questions=multiple_choice_questions,
+                           multiplec_question_total=len(multiple_choice_questions),
+                           multiplec_question_answers=multiplec_question_answers,
+                           multiplec_question_answers_total=len(multiplec_question_answers)
+                           )
 
 @app.route("/course/<int:course_id>/text_question/<int:text_question_id>")
 def multiple_choice(course_id, text_question_id):

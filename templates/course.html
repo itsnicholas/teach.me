@@ -24,8 +24,23 @@
 
 {% if text_questions %}
 <h3>Tehdyt tehtävät:</h3>
-
-
+<b>Tekstikysymykset: ({{ text_question_answers_total }}/{{ text_questions_total }})</b>
+<br>
+<ul>
+{% for text_question_answer in text_question_answers %}
+<li><font color="green">{{ text_question_answer.question }}</font>
+<br></li>
+{% endfor %}
+</ul>
+<b>Monivalintakysymykset: ({{ multiplec_question_answers_total }}/{{ multiplec_question_total }})</b>
+<br>
+<ul>
+{% for multiplec_question_answer in multiplec_question_answers %}
+<li><font color="green">{{ multiplec_question_answer.question }}</font>
+<br></li>
+{% endfor %}
+</ul>
+<hr>
 <h3>Tekstikysymykset:</h3>
 <ul>
 {% for text_question in text_questions %}
