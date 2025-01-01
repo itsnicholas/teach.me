@@ -3,6 +3,17 @@
 {% block title %}{{ course_info.name }}{% endblock %}
 {% block content %}
 <h1>{{ course_info.name }}</h1>
+{% if admin %}
+<h3>Ilmoittautuneet opiskelijat:</h3>
+{% if course_enrolled %}
+<ul>
+{% for student in course_enrolled %}
+<li>{{ student.username }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+<hr>
+{% else %}
 {% if join %}
 <h3>Olet ilmoittautunut!</h3>
 {% else %}
@@ -17,11 +28,10 @@
 {% if materials %}
 <h3>Materiaali:</h3>
 {% for material in materials %}
-{{ material.material }}
-<hr>
+<p>{{ material.material }}</p>
 {% endfor %}
 {% endif %}
-
+<hr>
 {% if text_questions %}
 <h3>Tehdyt tehtävät:</h3>
 <b>Tekstikysymykset: ({{ text_question_answers_total }}/{{ text_questions_total }})</b>
@@ -61,6 +71,7 @@
 <br></li>
 {% endfor %}
 </ul>
+{% endif %}
 <hr>
 {% endif %}
 
