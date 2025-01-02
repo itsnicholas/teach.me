@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% extends "layout.html" %}
+{% block title %}{{ course_info.name }}{% endblock %}
+{% block content %}
+<h1>{{ course_info.name }}</h1>
+<h3>Opiskelija: {{ student.username }}</h3>
+<hr>
+{% if text_questions %}
+<h3>Tehdyt tehtävät:</h3>
+<b>Tekstikysymykset: ({{ text_question_answers_total }}/{{ text_questions_total }})</b>
+<br>
+<ul>
+{% for text_question_answer in text_question_answers %}
+<li><font color="green">{{ text_question_answer.question }}</font>
+<br></li>
+{% endfor %}
+</ul>
+<b>Monivalintakysymykset: ({{ multiplec_question_answers_total }}/{{ multiplec_question_total }})</b>
+<br>
+<ul>
+{% for multiplec_question_answer in multiplec_question_answers %}
+<li><font color="green">{{ multiplec_question_answer.question }}</font>
+<br></li>
+{% endfor %}
+</ul>
+<hr>
+{% endif %}
+
+<a href="/course/{{ course_info.id }}">Takaisin</a>
+{% endblock %}

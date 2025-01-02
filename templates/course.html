@@ -8,7 +8,9 @@
 {% if course_enrolled %}
 <ul>
 {% for student in course_enrolled %}
-<li>{{ student.username }}</li>
+<li><a href="/course/{{ course_info.id }}/enrolled/{{ student.id }}">
+{{ student.username }}</a>
+</li>
 {% endfor %}
 </ul>
 {% endif %}
