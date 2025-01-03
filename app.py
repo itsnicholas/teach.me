@@ -16,10 +16,14 @@ db = SQLAlchemy(app)
 @app.route("/")
 def index():
     """Function information."""
+    username_id = session["id"]
     sql = text("SELECT id, name FROM courses ORDER BY id;")
     result = db.session.execute(sql)
     courses = result.fetchall()
-    return render_template("index.html", courses=courses)
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+    return render_template("index.html", courses=courses, admin=admin)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -94,6 +98,44 @@ def signup2():
     sql = text("INSERT INTO users VALUES (DEFAULT, :username, :hash_value, false);")
     db.session.execute(sql, {"username":username, "hash_value":hash_value})
     db.session.commit()
+
+    return redirect("index.html")
+
+@app.route("/add_course", methods=["POST"])
+def add_course():
+    """Function information."""
+
+    course_name = request.form["course_name"]
+
+    print("Tässä1")
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    print("Tässä2")
+
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+
+    print("Tässä3")
+
+    if not admin:
+        abort(403)
+
+    print("Tässä4")
+
+    sql = text("SELECT id FROM courses WHERE name=:course_name;")
+    result = db.session.execute(sql, {"course_name":course_name})
+    course_result = result.fetchone()
+
+    if not course_result:
+        sql = text("INSERT INTO courses VALUES (DEFAULT, :course_name, DEFAULT);")
+        db.session.execute(sql, {"course_name":course_name})
+        db.session.commit()
+
+    print("Tässä5")
 
     return redirect("/")
 

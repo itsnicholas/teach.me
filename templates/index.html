@@ -12,6 +12,16 @@
 <a href="/course/{{ course.id }}">{{ course.name }}</a>
 <br>
 {% endfor %}
+{% if admin %}
+<hr>
+<h3>Lisää kurssi:</h3>
+<form action="/add_course" method="POST">
+    Kurssin nimi: <br>
+    <textarea name="course_name" rows="1" cols="40"></textarea>
+    <input type="submit" value="Lisää">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+</form>
+{% endif %}
 <hr>
 <a href="/logout">Kirjaudu ulos</a>
 {% else %}
