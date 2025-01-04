@@ -16,14 +16,7 @@ db = SQLAlchemy(app)
 @app.route("/")
 def index():
     """Function information."""
-    username_id = session["id"]
-    sql = text("SELECT id, name FROM courses ORDER BY id;")
-    result = db.session.execute(sql)
-    courses = result.fetchall()
-    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
-    result = db.session.execute(sql, {"username_id":username_id})
-    admin = result.fetchone()[1]
-    return render_template("index.html", courses=courses, admin=admin)
+    return render_template("index.html")
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -54,7 +47,7 @@ def login():
             session["id"] = user.id
             session["username"] = username
             session["csrf_token"] = secrets.token_hex(16)
-            return redirect("/")
+            return redirect("/courses")
 
         # invalid password
         return render_template("index.html", message="Salasana on väärä")
@@ -101,30 +94,34 @@ def signup2():
 
     return redirect("index.html")
 
+@app.route("/courses")
+def courses():
+    """Function information."""
+    username_id = session["id"]
+    sql = text("SELECT id, name FROM courses ORDER BY id;")
+    result = db.session.execute(sql)
+    courses_info = result.fetchall()
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+    return render_template("courses.html", courses_info=courses_info, admin=admin)
+
 @app.route("/add_course", methods=["POST"])
 def add_course():
     """Function information."""
 
     course_name = request.form["course_name"]
 
-    print("Tässä1")
-
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
-
-    print("Tässä2")
 
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
     admin = result.fetchone()[1]
 
-    print("Tässä3")
-
     if not admin:
         abort(403)
-
-    print("Tässä4")
 
     sql = text("SELECT id FROM courses WHERE name=:course_name;")
     result = db.session.execute(sql, {"course_name":course_name})
@@ -134,8 +131,6 @@ def add_course():
         sql = text("INSERT INTO courses VALUES (DEFAULT, :course_name, DEFAULT);")
         db.session.execute(sql, {"course_name":course_name})
         db.session.commit()
-
-    print("Tässä5")
 
     return redirect("/")
 

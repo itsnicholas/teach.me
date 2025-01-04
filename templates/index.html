@@ -2,29 +2,6 @@
 {% extends "layout.html" %}
 {% block title %}Etusivu{% endblock %}
 {% block content %}
-{% if session.username %}
-<h1>Etusivu</h1>
-<p>Olet kirjautunut nimellä <b>{{ session.username }}</b></p>
-<hr>
-<h3>Kurssilista:</h3>
-{% for course in courses %}
-{{ course.id }}.
-<a href="/course/{{ course.id }}">{{ course.name }}</a>
-<br>
-{% endfor %}
-{% if admin %}
-<hr>
-<h3>Lisää kurssi:</h3>
-<form action="/add_course" method="POST">
-    Kurssin nimi: <br>
-    <textarea name="course_name" rows="1" cols="40"></textarea>
-    <input type="submit" value="Lisää">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-</form>
-{% endif %}
-<hr>
-<a href="/logout">Kirjaudu ulos</a>
-{% else %}
 <h1>Tervetuloa!</h1>
 <p>Kirjaudu sisään</p>
 <form action="/login" method="POST" onsubmit="return check(this)">
@@ -60,5 +37,4 @@
 <form action="/signup">
 <input type="submit" value="Luo tili">
 </form>
-{% endif %}
 {% endblock %}
