@@ -98,7 +98,7 @@ def signup2():
 def courses():
     """Function information."""
     username_id = session["id"]
-    sql = text("SELECT id, name FROM courses ORDER BY id;")
+    sql = text("SELECT id, name FROM courses WHERE visible=True ORDER BY id;")
     result = db.session.execute(sql)
     courses_info = result.fetchall()
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
@@ -132,7 +132,30 @@ def add_course():
         db.session.execute(sql, {"course_name":course_name})
         db.session.commit()
 
-    return redirect("/")
+    return redirect("/courses")
+
+@app.route("/remove_course", methods=["POST"])
+def remove_course():
+    """Function information."""
+
+    course_id = request.form["course_id"]
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+
+    if not admin:
+        abort(403)
+
+    sql = text("UPDATE courses SET visible=False WHERE id=:course_id AND visible=True;")
+    db.session.execute(sql, {"course_id":course_id})
+    db.session.commit()
+
+    return redirect("/courses")
 
 @app.route("/course/<int:course_id>")
 def course(course_id):

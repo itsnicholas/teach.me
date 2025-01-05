@@ -25,15 +25,15 @@
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
 </form>
-{% endif %}
 <hr>
+{% endif %}
 {% if materials %}
 <h3>Materiaali:</h3>
 {% for material in materials %}
 <p>{{ material.material }}</p>
 {% endfor %}
-{% endif %}
 <hr>
+{% endif %}
 {% if text_questions %}
 <h3>Tehdyt tehtävät:</h3>
 <b>Tekstikysymykset: ({{ text_question_answers_total }}/{{ text_questions_total }})</b>
@@ -73,8 +73,8 @@
 <br></li>
 {% endfor %}
 </ul>
-{% endif %}
 <hr>
+{% endif %}
 {% endif %}
 
 <a href="/courses">Takaisin</a>

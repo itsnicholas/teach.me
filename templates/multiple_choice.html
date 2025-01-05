@@ -2,9 +2,9 @@
 {% extends "layout.html" %}
 {% block title %}Monivalintakysymys{% endblock %}
 {% block content %}
-{% if choices %}
 <h3>Monivalintakysymys</h3>
 {{ question.question }}
+{% if choices %}
 <hr>
 <form action="/answer_multiple_choice_question" method="POST">
 {% for choice in choices %}
