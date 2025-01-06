@@ -41,6 +41,13 @@
 {% for material in materials %}
 <p>{{ material.material }}</p>
 {% endfor %}
+<form action="/add_material" method="POST">
+    Lisää materiaalia: <br>
+    <textarea name="material_answer" rows="3" cols="40"></textarea>
+    <input type="submit" value="Lisää">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="course_id" value="{{ course_info.id }}">
+</form>
 <hr>
 {% endif %}
 {% if text_questions %}

@@ -181,6 +181,30 @@ def change_course_name():
 
     return redirect("/course/" + str(course_id))
 
+@app.route("/add_material", methods=["POST"])
+def add_material():
+    """Function information."""
+
+    material_answer = request.form["material_answer"]
+    course_id = request.form["course_id"]
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+
+    if not admin:
+        abort(403)
+
+    sql = text("INSERT INTO materials VALUES (DEFAULT, :course_id, :material_answer);")
+    db.session.execute(sql, {"course_id":course_id, "material_answer":material_answer})
+    db.session.commit()
+
+    return redirect("/course/" + str(course_id))
+
 @app.route("/course/<int:course_id>")
 def course(course_id):
     """Function information."""
