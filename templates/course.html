@@ -39,7 +39,16 @@
 {% if materials %}
 <h3>Materiaali:</h3>
 {% for material in materials %}
-<p>{{ material.material }}</p>
+<p>{{ material.material }}
+{% if admin %}
+<form action="/remove_material" method="POST">
+    <input type="submit" value="Poista materiaali">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="course_id" value="{{ course_info.id }}">
+    <input type="hidden" name="material_id" value="{{ material.id }}">
+</form>
+{% endif %}
+</p>
 {% endfor %}
 <form action="/add_material" method="POST">
     Lisää materiaalia: <br>

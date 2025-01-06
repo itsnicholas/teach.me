@@ -199,8 +199,32 @@ def add_material():
     if not admin:
         abort(403)
 
-    sql = text("INSERT INTO materials VALUES (DEFAULT, :course_id, :material_answer);")
+    sql = text("INSERT INTO materials VALUES (DEFAULT, :course_id, :material_answer, DEFAULT);")
     db.session.execute(sql, {"course_id":course_id, "material_answer":material_answer})
+    db.session.commit()
+
+    return redirect("/course/" + str(course_id))
+
+@app.route("/remove_material", methods=["POST"])
+def remove_material():
+    """Function information."""
+
+    course_id = request.form["course_id"]
+    material_id = request.form["material_id"]
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+
+    if not admin:
+        abort(403)
+
+    sql = text("UPDATE materials SET visible=False WHERE id=:material_id AND course_id=:course_id;")
+    db.session.execute(sql, {"material_id": material_id, "course_id":course_id})
     db.session.commit()
 
     return redirect("/course/" + str(course_id))
@@ -219,7 +243,7 @@ def course(course_id):
     sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:course_id;")
     result = db.session.execute(sql, {"username_id":username_id, "course_id":course_id})
     join = result.fetchone()
-    sql = text("SELECT id, material FROM materials WHERE course_id=:course_id;")
+    sql = text("SELECT id, material FROM materials WHERE course_id=:course_id AND visible=True;")
     result = db.session.execute(sql, {"course_id":course_id})
     materials = result.fetchall()
     sql = text("SELECT id, question FROM textquestions WHERE course_id=:course_id;")
