@@ -157,6 +157,30 @@ def remove_course():
 
     return redirect("/courses")
 
+@app.route("/change_course_name", methods=["POST"])
+def change_course_name():
+    """Function information."""
+
+    course_name = request.form["course_name"]
+    course_id = request.form["course_id"]
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+
+    if not admin:
+        abort(403)
+
+    sql = text("UPDATE courses SET name=:course_name WHERE id=:course_id;")
+    db.session.execute(sql, {"course_name":course_name, "course_id":course_id})
+    db.session.commit()
+
+    return redirect("/course/" + str(course_id))
+
 @app.route("/course/<int:course_id>")
 def course(course_id):
     """Function information."""
