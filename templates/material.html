@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% extends "layout.html" %}
+{% block title %}Materiaali{% endblock %}
+{% block content %}
+{% if material_id %}
+<h3>Materiaali</h3>
+{{ material_text }}
+<hr>
+<form action="/change_material" method="POST">
+    Muuta materiaalia: <br>
+    <textarea name="material_text" rows="3" cols="40"></textarea>
+    <input type="submit" value="Päivitä">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="material_id" value="{{ material_id }}">
+    <input type="hidden" name="course_id" value="{{ course_id }}">
+</form>
+{% endif %}
+<hr>
+<a href="/course/{{ course_id }}">Takaisin</a>
+{% endblock %}

@@ -181,6 +181,30 @@ def change_course_name():
 
     return redirect("/course/" + str(course_id))
 
+@app.route("/remove_material", methods=["POST"])
+def remove_material():
+    """Function information."""
+
+    course_id = request.form["course_id"]
+    material_id = request.form["material_id"]
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+
+    if not admin:
+        abort(403)
+
+    sql = text("UPDATE materials SET visible=False WHERE id=:material_id AND course_id=:course_id;")
+    db.session.execute(sql, {"material_id": material_id, "course_id":course_id})
+    db.session.commit()
+
+    return redirect("/course/" + str(course_id))
+
 @app.route("/add_material", methods=["POST"])
 def add_material():
     """Function information."""
@@ -205,12 +229,24 @@ def add_material():
 
     return redirect("/course/" + str(course_id))
 
-@app.route("/remove_material", methods=["POST"])
-def remove_material():
+@app.route("/course/<int:course_id>/material/<int:material_id>")
+def material(course_id, material_id):
+    """Function information."""
+
+    sql = text("SELECT id, material FROM materials WHERE id=:material_id AND course_id=:course_id;")
+    result = db.session.execute(sql, {"material_id":material_id, "course_id":course_id})
+    material_text = result.fetchone()[1]
+
+    return render_template("material.html", material_id=material_id, course_id=course_id,
+                           material_text=material_text)
+
+@app.route("/change_material", methods=["POST"])
+def change_material():
     """Function information."""
 
     course_id = request.form["course_id"]
     material_id = request.form["material_id"]
+    material_text = request.form["material_text"]
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
@@ -223,8 +259,10 @@ def remove_material():
     if not admin:
         abort(403)
 
-    sql = text("UPDATE materials SET visible=False WHERE id=:material_id AND course_id=:course_id;")
-    db.session.execute(sql, {"material_id": material_id, "course_id":course_id})
+    sql = text("UPDATE materials SET material=:material_text WHERE id=:material_id" +
+               " AND course_id=:course_id;")
+    db.session.execute(sql, {"material_id": material_id, "course_id":course_id,
+                             "material_text":material_text})
     db.session.commit()
 
     return redirect("/course/" + str(course_id))

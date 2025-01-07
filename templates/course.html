@@ -39,17 +39,20 @@
 {% if materials %}
 <h3>Materiaali:</h3>
 {% for material in materials %}
-<p>{{ material.material }}
+<p>{{ material.material }}</p>
 {% if admin %}
+<a href="/course/{{ course_info.id }}/material/{{ material.id }}">Muuta materiaali</a>
 <form action="/remove_material" method="POST">
     <input type="submit" value="Poista materiaali">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
     <input type="hidden" name="material_id" value="{{ material.id }}">
 </form>
+<br>
 {% endif %}
-</p>
 {% endfor %}
+{% endif %}
+{% if admin %}
 <form action="/add_material" method="POST">
     Lisää materiaalia: <br>
     <textarea name="material_answer" rows="3" cols="40"></textarea>
@@ -57,8 +60,8 @@
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
 </form>
-<hr>
 {% endif %}
+<hr>
 {% if text_questions %}
 {% if not admin %}
 <h3>Tehdyt tehtävät:</h3>
