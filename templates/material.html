@@ -4,7 +4,9 @@
 {% block content %}
 {% if material_id %}
 <h3>Materiaali</h3>
-{{ material_text }}
+Alkuperäinen materiaali:
+<br>
+<p>{{ material_text }}</p>
 <hr>
 <form action="/change_material" method="POST">
     Muuta materiaalia: <br>

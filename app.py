@@ -157,6 +157,57 @@ def remove_course():
 
     return redirect("/courses")
 
+@app.route("/course/<int:course_id>")
+def course(course_id):
+    """Function information."""
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+    print(admin, "admin")
+    sql = text("SELECT id, name FROM courses WHERE id=:course_id;")
+    result = db.session.execute(sql, {"course_id":course_id})
+    course_info = result.fetchone()
+    sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:course_id;")
+    result = db.session.execute(sql, {"username_id":username_id, "course_id":course_id})
+    join = result.fetchone()
+    sql = text("SELECT id, material FROM materials WHERE course_id=:course_id AND visible=True;")
+    result = db.session.execute(sql, {"course_id":course_id})
+    materials = result.fetchall()
+    sql = text("SELECT id, question FROM textquestions WHERE course_id=:course_id AND " +
+               "visible=True;")
+    result = db.session.execute(sql, {"course_id":course_id})
+    text_questions = result.fetchall()
+    sql = text("SELECT id, question FROM multiplechoicequestions WHERE course_id=:course_id;")
+    result = db.session.execute(sql, {"course_id":course_id})
+    multiple_choice_questions = result.fetchall()
+    sql = text("SELECT t.question FROM textquestions t, usersquestions u WHERE t.id=u.question_id" +
+               " AND u.course_id=:course_id AND u.user_id=:user_id AND u.type=1 AND " +
+               "t.visible=True;")
+    result = db.session.execute(sql, {"course_id":course_id, "user_id":username_id})
+    text_question_answers = result.fetchall()
+    sql = text("SELECT m.question FROM multiplechoicequestions m, usersquestions u " +
+               "WHERE m.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND " +
+               "u.type=2;")
+    result = db.session.execute(sql, {"course_id":course_id, "user_id":username_id})
+    multiplec_question_answers = result.fetchall()
+    sql = text("SELECT u.id, u.username FROM users u, userscourses o, courses c " +
+               "WHERE u.id=o.user_id AND o.course_id=c.id AND c.name=:course_name;")
+    result = db.session.execute(sql, {"course_name":course_info.name})
+    course_enrolled = result.fetchall()
+    print(course_enrolled, "course_enrolled")
+    return render_template("course.html",
+                           course_info=course_info, join=join, materials=materials,
+                           text_questions=text_questions, text_questions_total=
+                           len(text_questions),
+                           text_question_answers=text_question_answers,
+                           text_question_answers_total=len(text_question_answers),
+                           multiple_choice_questions=multiple_choice_questions,
+                           multiplec_question_total=len(multiple_choice_questions),
+                           multiplec_question_answers=multiplec_question_answers,
+                           multiplec_question_answers_total=len(multiplec_question_answers),
+                           course_enrolled=course_enrolled, admin=admin)
+
 @app.route("/change_course_name", methods=["POST"])
 def change_course_name():
     """Function information."""
@@ -179,6 +230,20 @@ def change_course_name():
     db.session.execute(sql, {"course_name":course_name, "course_id":course_id})
     db.session.commit()
 
+    return redirect("/course/" + str(course_id))
+
+@app.route("/enrol", methods=["POST"])
+def enrol():
+    """Function information."""
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    user_id = session["id"]
+    course_id = request.form["course_id"]
+    sql = text("INSERT INTO userscourses VALUES (DEFAULT, :user_id, :course_id);")
+    db.session.execute(sql, {"user_id":user_id, "course_id":course_id})
+    db.session.commit()
     return redirect("/course/" + str(course_id))
 
 @app.route("/remove_material", methods=["POST"])
@@ -267,53 +332,30 @@ def change_material():
 
     return redirect("/course/" + str(course_id))
 
-@app.route("/course/<int:course_id>")
-def course(course_id):
+@app.route("/remove_text_question", methods=["POST"])
+def remove_text_question():
     """Function information."""
+
+    course_id = request.form["course_id"]
+    text_question_id = request.form["text_question_id"]
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
     admin = result.fetchone()[1]
-    print(admin, "admin")
-    sql = text("SELECT id, name FROM courses WHERE id=:course_id;")
-    result = db.session.execute(sql, {"course_id":course_id})
-    course_info = result.fetchone()
-    sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:course_id;")
-    result = db.session.execute(sql, {"username_id":username_id, "course_id":course_id})
-    join = result.fetchone()
-    sql = text("SELECT id, material FROM materials WHERE course_id=:course_id AND visible=True;")
-    result = db.session.execute(sql, {"course_id":course_id})
-    materials = result.fetchall()
-    sql = text("SELECT id, question FROM textquestions WHERE course_id=:course_id;")
-    result = db.session.execute(sql, {"course_id":course_id})
-    text_questions = result.fetchall()
-    sql = text("SELECT id, question FROM multiplechoicequestions WHERE course_id=:course_id;")
-    result = db.session.execute(sql, {"course_id":course_id})
-    multiple_choice_questions = result.fetchall()
-    sql = text("SELECT t.question FROM textquestions t, usersquestions u " +
-    "WHERE t.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND u.type=1;")
-    result = db.session.execute(sql, {"course_id":course_id, "user_id":username_id})
-    text_question_answers = result.fetchall()
-    sql = text("SELECT m.question FROM multiplechoicequestions m, usersquestions u " +
-    "WHERE m.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND u.type=2;")
-    result = db.session.execute(sql, {"course_id":course_id, "user_id":username_id})
-    multiplec_question_answers = result.fetchall()
-    sql = text("SELECT u.id, u.username FROM users u, userscourses o, courses c " +
-    "WHERE u.id=o.user_id AND o.course_id=c.id AND c.name=:course_name;")
-    result = db.session.execute(sql, {"course_name":course_info.name})
-    course_enrolled = result.fetchall()
-    print(course_enrolled, "course_enrolled")
-    return render_template("course.html",
-                           course_info=course_info, join=join, materials=materials,
-                           text_questions=text_questions, text_questions_total=
-                           len(text_questions),
-                           text_question_answers=text_question_answers,
-                           text_question_answers_total=len(text_question_answers),
-                           multiple_choice_questions=multiple_choice_questions,
-                           multiplec_question_total=len(multiple_choice_questions),
-                           multiplec_question_answers=multiplec_question_answers,
-                           multiplec_question_answers_total=len(multiplec_question_answers),
-                           course_enrolled=course_enrolled, admin=admin)
+
+    if not admin:
+        abort(403)
+
+    sql = text("UPDATE textquestions SET visible=False WHERE id=:text_question_id " +
+               "AND course_id=:course_id;")
+    db.session.execute(sql, {"text_question_id": text_question_id, "course_id":course_id})
+    db.session.commit()
+
+    return redirect("/course/" + str(course_id))
 
 @app.route("/course/<int:course_id>/enrolled/<int:student_id>")
 def enrolled(course_id, student_id):
@@ -324,18 +366,21 @@ def enrolled(course_id, student_id):
     sql = text("SELECT id, username FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":student_id})
     student = result.fetchone()
-    sql = text("SELECT id, question FROM textquestions WHERE course_id=:course_id;")
+    sql = text("SELECT id, question FROM textquestions WHERE course_id=:course_id AND " +
+               "visible=True;")
     result = db.session.execute(sql, {"course_id":course_id})
     text_questions = result.fetchall()
     sql = text("SELECT id, question FROM multiplechoicequestions WHERE course_id=:course_id;")
     result = db.session.execute(sql, {"course_id":course_id})
     multiple_choice_questions = result.fetchall()
     sql = text("SELECT t.question FROM textquestions t, usersquestions u " +
-    "WHERE t.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND u.type=1;")
+               "WHERE t.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND " +
+               "u.type=1 AND t.visible=True;")
     result = db.session.execute(sql, {"course_id":course_id, "user_id":student_id})
     text_question_answers = result.fetchall()
     sql = text("SELECT m.question FROM multiplechoicequestions m, usersquestions u " +
-    "WHERE m.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND u.type=2;")
+               "WHERE m.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND " +
+               "u.type=2")
     result = db.session.execute(sql, {"course_id":course_id, "user_id":student_id})
     multiplec_question_answers = result.fetchall()
     print(student, "student")
@@ -353,7 +398,7 @@ def enrolled(course_id, student_id):
 def multiple_choice(course_id, text_question_id):
     """Function information."""
     sql = text("SELECT id, course_id, question FROM textquestions WHERE" +
-    " id=:text_question_id;")
+               " id=:text_question_id AND visible=True;")
     result = db.session.execute(sql, {"text_question_id":text_question_id})
     question = result.fetchone()
     print(question.question, "question.question")
@@ -364,31 +409,17 @@ def multiple_choice(course_id, text_question_id):
 def text_question(course_id, multiple_choice_question_id):
     """Function information."""
     sql = text("SELECT id, option FROM multiplechoiceoptions WHERE" +
-    " multiplechoicequestion_id=:multiple_choice_question_id;")
+                " multiplechoicequestion_id=:multiple_choice_question_id;")
     result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
     choices = result.fetchall()
     sql = text("SELECT id, question FROM multiplechoicequestions WHERE" +
-    " id=:multiple_choice_question_id;")
+                " id=:multiple_choice_question_id;")
     result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
     question = result.fetchone()
     print(question.question, "question_text")
     return render_template("multiple_choice.html",
                            course_id=course_id, choices=choices,
                            question=question)
-
-@app.route("/enrol", methods=["POST"])
-def enrol():
-    """Function information."""
-
-    if session["csrf_token"] != request.form["csrf_token"]:
-        abort(403)
-
-    user_id = session["id"]
-    course_id = request.form["course_id"]
-    sql = text("INSERT INTO userscourses VALUES (DEFAULT, :user_id, :course_id);")
-    db.session.execute(sql, {"user_id":user_id, "course_id":course_id})
-    db.session.commit()
-    return redirect("/course/" + str(course_id))
 
 @app.route("/answer_text_question", methods=["POST"])
 def answer_text_question():
@@ -402,7 +433,8 @@ def answer_text_question():
     question_id = request.form["question_id"]
     course_id = request.form["course_id"]
 
-    sql = text("SELECT id, answer FROM textquestions WHERE id=:question_id;")
+    sql = text("SELECT id, answer FROM textquestions WHERE id=:question_id " +
+               "AND visible=True;")
     result = db.session.execute(sql, {"question_id":question_id})
     text_question = result.fetchone()
 

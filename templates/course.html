@@ -88,6 +88,14 @@
 {% for text_question in text_questions %}
 <li><a href="/course/{{ course_info.id }}/text_question/{{ text_question.id }}">
 {{ text_question.question }}</a>
+{% if admin %}
+<form action="/remove_text_question" method="POST">
+    <input type="submit" value="Poista kysymys">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="course_id" value="{{ course_info.id }}">
+    <input type="hidden" name="text_question_id" value="{{ text_question.id }}">
+</form>
+{% endif %}
 <br></li>
 {% endfor %}
 </ul>
