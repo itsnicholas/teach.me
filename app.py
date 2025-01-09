@@ -298,13 +298,16 @@ def add_material():
 @app.route("/course/<int:course_id>/material/<int:material_id>")
 def material(course_id, material_id):
     """Function information."""
-
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
     sql = text("SELECT id, material FROM materials WHERE id=:material_id AND course_id=:course_id;")
     result = db.session.execute(sql, {"material_id":material_id, "course_id":course_id})
     material_text = result.fetchone()[1]
 
     return render_template("material.html", material_id=material_id, course_id=course_id,
-                           material_text=material_text)
+                           material_text=material_text, admin=admin)
 
 @app.route("/change_material", methods=["POST"])
 def change_material():
@@ -450,13 +453,44 @@ def enrolled(course_id, student_id):
 @app.route("/course/<int:course_id>/text_question/<int:text_question_id>")
 def multiple_choice(course_id, text_question_id):
     """Function information."""
-    sql = text("SELECT id, course_id, question FROM textquestions WHERE" +
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+    sql = text("SELECT id, course_id, answer, question FROM textquestions WHERE" +
                " id=:text_question_id AND visible=True;")
     result = db.session.execute(sql, {"text_question_id":text_question_id})
     question = result.fetchone()
     print(question.question, "question.question")
     return render_template("text_question.html",
-                           course_id=course_id, question=question)
+                           course_id=course_id, question=question, admin=admin)
+
+@app.route("/change_tquestion_title", methods=["POST"])
+def change_tquestion_title():
+    """Function information."""
+
+    course_id = request.form["course_id"]
+    question_id = request.form["question_id"]
+    tquestion_title = request.form["tquestion_title"]
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+
+    if not admin:
+        abort(403)
+
+    sql = text("UPDATE textquestions SET question=:tquestion_title WHERE id=:question_id" +
+               " AND course_id=:course_id;")
+    db.session.execute(sql, {"question_id": question_id, "course_id":course_id,
+                             "tquestion_title":tquestion_title})
+    db.session.commit()
+
+    return redirect("/course/" + str(course_id))
 
 @app.route("/course/<int:course_id>/multiple_choice/<int:multiple_choice_question_id>")
 def text_question(course_id, multiple_choice_question_id):

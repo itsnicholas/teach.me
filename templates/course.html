@@ -4,9 +4,9 @@
 {% block content %}
 <h1>{{ course_info.name }}</h1>
 {% if admin %}
-<form action="/change_course_name" method="POST">
+<form action="/change_course_title" method="POST">
     Muuta kurssin nimeä: <br>
-    <textarea name="course_name" rows="1" cols="40"></textarea>
+    <textarea name="course_title" rows="1" cols="40"></textarea>
     <input type="submit" value="Päivitä">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
