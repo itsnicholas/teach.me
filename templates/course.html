@@ -101,18 +101,24 @@
 </ul>
 <hr>
 {% endif %}
-
 {% if multiple_choice_questions %}
 <h3>Monivalintakysymykset:</h3>
 <ul>
 {% for multiple_choice_question in multiple_choice_questions %}
 <li><a href="/course/{{ course_info.id }}/multiple_choice/{{ multiple_choice_question.id }}">
 {{ multiple_choice_question.question }}</a>
+{% if admin %}
+<form action="/remove_multiplec_question" method="POST">
+    <input type="submit" value="Poista kysymys">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="course_id" value="{{ course_info.id }}">
+    <input type="hidden" name="multiplec_question_id" value="{{ multiple_choice_question.id }}">
+</form>
+{% endif %}
 <br></li>
 {% endfor %}
 </ul>
 <hr>
 {% endif %}
-
 <a href="/courses">Takaisin</a>
 {% endblock %}
