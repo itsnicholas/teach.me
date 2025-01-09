@@ -99,8 +99,23 @@
 <br></li>
 {% endfor %}
 </ul>
-<hr>
+{% if admin %}
+Lisää tekstikysymys
+<form action="/add_text_question" method="POST">
+    Kysymys:
+    <br>
+    <textarea name="question" rows="3" cols="40"></textarea>
+    <br>
+    Vastaus:
+    <br>
+    <textarea name="answer" rows="3" cols="40"></textarea>
+    <input type="submit" value="Lisää">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="course_id" value="{{ course_info.id }}">
+</form>
 {% endif %}
+{% endif %}
+<hr>
 {% if multiple_choice_questions %}
 <h3>Monivalintakysymykset:</h3>
 <ul>
@@ -120,5 +135,6 @@
 </ul>
 <hr>
 {% endif %}
+
 <a href="/courses">Takaisin</a>
 {% endblock %}
