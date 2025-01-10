@@ -387,6 +387,48 @@ def add_text_question():
 
     return redirect("/course/" + str(course_id))
 
+@app.route("/add_multiplec_question", methods=["POST"])
+def add_multiplec_question():
+    """Function information."""
+
+    question = request.form["question"]
+    choices = request.form.getlist("choice")
+    answer = request.form["answer"]
+    course_id = request.form["course_id"]
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+
+    if not admin:
+        abort(403)
+
+    print(question, "question")
+    print(answer, "answer")
+    print(choices, "choices")
+    print(choices[int(answer)-1], "choices[int(answer)-1]")
+
+    sql = text("INSERT INTO multiplechoicequestions VALUES (DEFAULT, " +
+               ":course_id, :answer, :question, DEFAULT) RETURNING id;")
+    result = db.session.execute(sql, {"course_id":course_id, "answer":choices[int(answer)-1],
+                                      "question":question})
+    db.session.commit()
+    last_inserted_id = result.fetchone()[0]
+
+    print(last_inserted_id, "last_inserted_id")
+
+    for choice in choices:
+        if choice != "":
+            sql = text("INSERT INTO multiplechoiceoptions VALUES (DEFAULT, :id, :choice)")
+            db.session.execute(sql, {"id":last_inserted_id, "choice":choice})
+    db.session.commit()
+
+    return redirect("/course/" + str(course_id))
+
 @app.route("/remove_multiplec_question", methods=["POST"])
 def remove_multiplec_question():
     """Function information."""

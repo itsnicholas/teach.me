@@ -11,6 +11,7 @@ Alkuperäinen materiaali:
 <form action="/change_material" method="POST">
     Muuta materiaalia: <br>
     <textarea name="material_text" rows="3" cols="40"></textarea>
+    <br>
     <input type="submit" value="Päivitä">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="material_id" value="{{ material_id }}">

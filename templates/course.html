@@ -4,13 +4,16 @@
 {% block content %}
 <h1>{{ course_info.name }}</h1>
 {% if admin %}
+<fieldset>
 <form action="/change_course_title" method="POST">
-    Muuta kurssin nimeä: <br>
+    <legend><b>Muuta kurssin nimeä:</b></legend><br>
     <textarea name="course_title" rows="1" cols="40"></textarea>
+    <br>
     <input type="submit" value="Päivitä">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
 </form>
+</fieldset>
 <h3>Ilmoittautuneet opiskelijat:</h3>
 {% if course_enrolled %}
 <ul>
@@ -53,13 +56,16 @@
 {% endfor %}
 {% endif %}
 {% if admin %}
+<fieldset>
 <form action="/add_material" method="POST">
-    Lisää materiaalia: <br>
+    <legend><b>Lisää materiaalia:</b></legend><br>
     <textarea name="material_answer" rows="3" cols="40"></textarea>
+    <br>
     <input type="submit" value="Lisää">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
 </form>
+</fieldset>
 {% endif %}
 <hr>
 {% if text_questions %}
@@ -100,8 +106,9 @@
 {% endfor %}
 </ul>
 {% if admin %}
-Lisää tekstikysymys
+<fieldset>
 <form action="/add_text_question" method="POST">
+    <legend><b>Lisää tekstikysymys</b></legend><br>
     Kysymys:
     <br>
     <textarea name="question" rows="3" cols="40"></textarea>
@@ -109,10 +116,12 @@ Lisää tekstikysymys
     Vastaus:
     <br>
     <textarea name="answer" rows="3" cols="40"></textarea>
+    <br>
     <input type="submit" value="Lisää">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
 </form>
+</fieldset>
 {% endif %}
 {% endif %}
 <hr>
@@ -133,6 +142,49 @@ Lisää tekstikysymys
 <br></li>
 {% endfor %}
 </ul>
+{% if admin %}
+<fieldset>
+<form action="/add_multiplec_question" method="POST">
+    <legend><b>Lisää monivalintakysymys</b></legend><br>
+    Kysymys:
+    <br>
+    <textarea name="question" rows="3" cols="40"></textarea>
+    <br>
+    Vastaus:
+    <br>
+    1. vaihtoehto
+    <br>
+    <textarea name="choice" rows="1" cols="40"></textarea>
+    <br>
+    2. vaihtoehto
+    <br>
+    <textarea name="choice" rows="1" cols="40"></textarea>
+    <br>
+    3. vaihtoehto
+    <br>
+    <textarea name="choice" rows="1" cols="40"></textarea>
+    <br>
+    4. vaihtoehto
+    <br>
+    <textarea name="choice" rows="1" cols="40"></textarea>
+    <br>
+    Oikea vastaus:
+    <br>
+    <input type="radio" name="answer" id="choice1" value="1" checked="checked">
+    <label for="choice1">1. vaihtoehto</label>
+    <input type="radio" name="answer" id="choice2" value="2">
+    <label for="choice2">2. vaihtoehto</label>
+    <input type="radio" name="answer" id="choice3" value="3">
+    <label for="choice3">3. vaihtoehto</label>
+    <input type="radio" name="answer" id="choice4" value="4">
+    <label for="choice4">4. vaihtoehto</label>
+    <br>
+    <input type="submit" value="Lisää">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="course_id" value="{{ course_info.id }}">
+</form>
+</fieldset>
+{% endif %}
 <hr>
 {% endif %}
 
