@@ -581,6 +581,33 @@ def text_question(course_id, multiple_choice_question_id):
                            course_id=course_id, choices=choices,
                            question=question, admin=admin)
 
+@app.route("/change_mcquestion_title", methods=["POST"])
+def change_mcquestion_title():
+    """Function information."""
+
+    course_id = request.form["course_id"]
+    question_id = request.form["question_id"]
+    mcquestion_title = request.form["mcquestion_title"]
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+
+    if not admin:
+        abort(403)
+
+    sql = text("UPDATE multiplechoicequestions SET question=:mcquestion_title " +
+               "WHERE id=:question_id AND course_id=:course_id;")
+    db.session.execute(sql, {"question_id": question_id, "course_id":course_id,
+                             "mcquestion_title":mcquestion_title})
+    db.session.commit()
+
+    return redirect("/course/" + str(course_id))
+
 @app.route("/answer_text_question", methods=["POST"])
 def answer_text_question():
     """Function information."""

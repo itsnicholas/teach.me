@@ -4,10 +4,10 @@
 {% block content %}
 {% if material_id %}
 <h3>Materiaali</h3>
-Alkuperäinen materiaali:
+<b>Alkuperäinen materiaali:</b>
 <br>
 <p>{{ material_text }}</p>
-<hr>
+<fieldset>
 <form action="/change_material" method="POST">
     Muuta materiaalia: <br>
     <textarea name="material_text" rows="3" cols="40"></textarea>
@@ -17,6 +17,7 @@ Alkuperäinen materiaali:
     <input type="hidden" name="material_id" value="{{ material_id }}">
     <input type="hidden" name="course_id" value="{{ course_id }}">
 </form>
+</fieldset>
 {% endif %}
 <hr>
 <a href="/course/{{ course_id }}">Takaisin</a>
