@@ -4,6 +4,7 @@
 {% block content %}
 <h3>Monivalintakysymys</h3>
 {{ question.question }}
+{% if not admin %}
 {% if choices %}
 <hr>
 <form action="/answer_multiple_choice_question" method="POST">
@@ -17,6 +18,7 @@
 <input type="hidden" name="question_id" value="{{ question.id }}">
 <input type="hidden" name="course_id" value="{{ course_id }}">
 </form>
+{% endif %}
 {% endif %}
 <hr>
 <a href="/course/{{ course_id }}">Takaisin</a>

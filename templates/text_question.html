@@ -5,12 +5,12 @@
 {% if question %}
 <h3>Tekstikysymys</h3>
 {% if admin %}
-Alkuperäinen kysymys: 
+<b>Alkuperäinen kysymys:</b> 
 {% endif %}
-{{ question.question }}
+<br>
+<p>{{ question.question }}</p>
 {% if admin %}
-<br>
-<br>
+<fieldset>
 <form action="/change_tquestion_title" method="POST">
     Muuta tekstikysymystä: <br>
     <textarea name="tquestion_title" rows="1" cols="40"></textarea>
@@ -20,9 +20,24 @@ Alkuperäinen kysymys:
     <input type="hidden" name="question_id" value="{{ question.id }}">
     <input type="hidden" name="course_id" value="{{ question.course_id }}">
 </form>
+</fieldset>
+<br>
+<b>Alkuperäinen vastaus:</b>
+<p>{{ question.answer }}</p>
+<fieldset>
+<form action="/change_tquestion_answer" method="POST">
+    Muuta vastausta: <br>
+    <textarea name="tquestion_answer" rows="3" cols="40"></textarea>
+    <br>
+    <input type="submit" value="Päivitä">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="question_id" value="{{ question.id }}">
+    <input type="hidden" name="course_id" value="{{ question.course_id }}">
+</form>
+</fieldset>
 {% endif %}
-<hr>
 {% if not admin %}
+<hr>
 <form action="/answer_text_question" method="POST">
     Vastaus: <br>
     <textarea name="text_question_answer" rows="3" cols="40"></textarea>
