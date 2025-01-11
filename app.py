@@ -572,7 +572,7 @@ def text_question(course_id, multiple_choice_question_id):
                "multiplechoicequestion_id=:multiple_choice_question_id;")
     result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
     choices = result.fetchall()
-    sql = text("SELECT id, question FROM multiplechoicequestions WHERE " +
+    sql = text("SELECT id, question, answer FROM multiplechoicequestions WHERE " +
                "id=:multiple_choice_question_id AND visible=True;")
     result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
     question = result.fetchone()
@@ -605,6 +605,53 @@ def change_mcquestion_title():
     db.session.execute(sql, {"question_id": question_id, "course_id":course_id,
                              "mcquestion_title":mcquestion_title})
     db.session.commit()
+
+    return redirect("/course/" + str(course_id))
+
+@app.route("/change_mcquestion_answer", methods=["POST"])
+def change_mcquestion_answer():
+    """Function information."""
+
+    choices = request.form.getlist("choice")
+    answer = request.form["answer"]
+    course_id = request.form["course_id"]
+    question_id = request.form["question_id"]
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    username_id = session["id"]
+    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    result = db.session.execute(sql, {"username_id":username_id})
+    admin = result.fetchone()[1]
+
+    if not admin:
+        abort(403)
+
+    print(choices, "options")
+    print(answer, "answer")
+    print(course_id, "course_id")
+    print(question_id, "question_id")
+
+    sql = text("UPDATE multiplechoicequestions SET answer=:answer " +
+               "WHERE id=:question_id AND course_id=:course_id;")
+    db.session.execute(sql, {"course_id":course_id, "answer":choices[int(answer)-1],
+                                      "question_id":question_id})
+    db.session.commit()
+
+    sql = text("SELECT id, option FROM multiplechoiceoptions WHERE " +
+               "multiplechoicequestion_id=:question_id;")
+    result = db.session.execute(sql, {"question_id":question_id})
+    options = result.fetchall()
+
+    i = 0
+    for option in options:
+        sql = text("UPDATE multiplechoiceoptions SET option=:choice " +
+                   "WHERE id=:option_id")
+        db.session.execute(sql, {"option_id":option.id, "choice":choices[i]})
+        i += 1
+    db.session.commit()
+
 
     return redirect("/course/" + str(course_id))
 

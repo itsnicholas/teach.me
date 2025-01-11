@@ -20,6 +20,53 @@
     <input type="hidden" name="course_id" value="{{ course_id }}">
 </form>
 </fieldset>
+<br>
+<b>Alkuperäinen vastaus:</b>
+<p>{{ question.answer }}</p>
+<b>Vastausvaihtoehdot:</b>
+<p>
+    <ul>
+        {% for choice in choices %}
+        <li>{{ choice.option }}</li>
+        {% endfor %}
+    </ul>
+</p>
+<fieldset>
+    <form action="/change_mcquestion_answer" method="POST">
+        Muuta vastausvaihtoehtoja: <br>
+        1. vaihtoehto
+        <br>
+        <textarea name="choice" rows="1" cols="40"></textarea>
+        <br>
+        2. vaihtoehto
+        <br>
+        <textarea name="choice" rows="1" cols="40"></textarea>
+        <br>
+        3. vaihtoehto
+        <br>
+        <textarea name="choice" rows="1" cols="40"></textarea>
+        <br>
+        4. vaihtoehto
+        <br>
+        <textarea name="choice" rows="1" cols="40"></textarea>
+        <br>
+        Oikea vastaus:
+        <br>
+        <input type="radio" name="answer" id="choice1" value="1" checked="checked">
+        <label for="choice1">1. vaihtoehto</label>
+        <input type="radio" name="answer" id="choice2" value="2">
+        <label for="choice2">2. vaihtoehto</label>
+        <input type="radio" name="answer" id="choice3" value="3">
+        <label for="choice3">3. vaihtoehto</label>
+        <input type="radio" name="answer" id="choice4" value="4">
+        <label for="choice4">4. vaihtoehto</label>
+        <br>
+        <input type="submit" value="Päivitä">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        <input type="hidden" name="course_id" value="{{ course_id }}">
+    </form>
+    </fieldset>
 {% endif %}
 {% if not admin %}
 {% if choices %}
