@@ -2,6 +2,7 @@
 {% extends "layout.html" %}
 {% block title %}Etusivu{% endblock %}
 {% block content %}
+<p><font color="red">{{ message }}</font></p>
 <h1>Tervetuloa!</h1>
 <p>Kirjaudu sisään</p>
 <form action="/login" method="POST" onsubmit="return check(this)">
@@ -12,27 +13,7 @@
 <input type="submit" value="Kirjaudu">
 </form>
 
-<script>
-    function check(form) {
-        if (form.username.value.length > 16) {
-            alert("Tunnus on liian pitkä");
-            return false;
-        }
-        if (form.username.value.length < 1) {
-            alert("Tunnus on liian lyhyt");content
-            return false;
-        } 
-        if (form.password.value.length > 16) {
-            alert("Salasana on liian pitkä");
-            return false;
-        }
-        if (form.password.value.length < 8) {
-            alert("Salasana on liian lyhyt");
-            return false;
-        }
-        return true;
-    }
-    </script>
+
 
 <form action="/signup">
 <input type="submit" value="Luo tili">

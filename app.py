@@ -25,13 +25,13 @@ def login():
     password = request.form["password"]
 
     if len(username) > 16:
-        return render_template("index.html", error="Tunnus on liian pitkä")
+        return render_template("index.html", message="Tunnus on liian pitkä")
     if len(username) < 1:
-        return render_template("index.html", error="Tunnus on liian lyhyt")
+        return render_template("index.html", message="Tunnus on liian lyhyt")
     if len(password) > 16:
-        return render_template("index.html", error="Salasana on liian pitkä")
+        return render_template("index.html", message="Salasana on liian pitkä")
     if len(password) < 8:
-        return render_template("index.html", error="Salasana on liian lyhyt")
+        return render_template("index.html", message="Salasana on liian lyhyt")
 
     sql = text("SELECT id, password FROM users WHERE username=:username;")
     result = db.session.execute(sql, {"username":username})
@@ -70,13 +70,13 @@ def signup2():
     password = request.form["password"]
 
     if len(username) > 16:
-        return render_template("signup.html", error="Tunnus on liian pitkä")
+        return render_template("signup.html", message="Tunnus on liian pitkä")
     if len(username) < 1:
-        return render_template("signup.html", error="Tunnus on liian lyhyt")
+        return render_template("signup.html", message="Tunnus on liian lyhyt")
     if len(password) > 16:
-        return render_template("signup.html", error="Salasana on liian pitkä")
+        return render_template("signup.html", message="Salasana on liian pitkä")
     if len(password) < 8:
-        return render_template("signup.html", error="Salasana on liian lyhyt")
+        return render_template("signup.html", message="Salasana on liian lyhyt")
 
     sql = text("SELECT id, password FROM users WHERE username=:username;")
     result = db.session.execute(sql, {"username":username})
@@ -114,6 +114,11 @@ def add_course():
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
+
+    if len(course_name) > 50:
+        return render_template("error.html", message="Kurssin nimi on liian pitkä")
+    if len(course_name) < 1:
+        return render_template("error.html", message="Kurssin nimi on liian lyhyt")
 
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")

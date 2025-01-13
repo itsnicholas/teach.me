@@ -2,6 +2,7 @@
 {% extends "layout.html" %}
 {% block title %}Luo tili{% endblock %}
 {% block content %}
+<p><font color="red">{{ message }}</font></p>
 <h1>Luo tili</h1>
 <form action="/signup" method="POST" onsubmit="return check(this)">
 <p>Tunnus (1-16 merkkiä):<br>
@@ -10,27 +11,7 @@
 <input type="password" name="password"></p>
 <input type="submit" value="Luo tili">
 
-<script>
-function check(form) {
-    if (form.username.value.length > 16) {
-        alert("Tunnus on liian pitkä");
-        return false;
-    }
-    if (form.username.value.length < 1) {
-        alert("Tunnus on liian lyhyt");
-        return false;
-    }
-    if (form.password.value.length > 16) {
-        alert("Salasana on liian pitkä");
-        return false;
-    }
-    if (form.password.value.length < 8) {
-        alert("Salasana on liian lyhyt");
-        return false;
-    }
-    return true;
-}
-</script>
+
 
 </form>
 <form action="/">
