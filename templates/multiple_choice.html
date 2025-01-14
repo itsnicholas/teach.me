@@ -11,7 +11,7 @@
 {% if admin %}
 <fieldset>
 <form action="/change_mcquestion_title" method="POST">
-    Muuta monivalintakysymystä: <br>
+    Muuta monivalintakysymystä: (1-100 merkkiä)<br>
     <textarea name="mcquestion_title" rows="1" cols="40"></textarea>
     <br>
     <input type="submit" value="Päivitä">
@@ -33,7 +33,7 @@
 </p>
 <fieldset>
     <form action="/change_mcquestion_answer" method="POST">
-        Muuta vastausvaihtoehtoja: <br>
+        Muuta vastausvaihtoehtoja: (1-50 merkkiä)<br>
         1. vaihtoehto
         <br>
         <textarea name="choice" rows="1" cols="40"></textarea>

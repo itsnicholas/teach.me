@@ -214,15 +214,20 @@ def course(course_id):
                            multiplec_question_answers_total=len(multiplec_question_answers),
                            course_enrolled=course_enrolled, admin=admin)
 
-@app.route("/change_course_name", methods=["POST"])
-def change_course_name():
+@app.route("/change_course_title", methods=["POST"])
+def change_course_title():
     """Function information."""
 
-    course_name = request.form["course_name"]
+    course_title = request.form["course_title"]
     course_id = request.form["course_id"]
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
+
+    if len(course_title) > 50:
+        return render_template("error.html", message="Kurssin nimi on liian pitkä")
+    if len(course_title) < 1:
+        return render_template("error.html", message="Kurssin nimi on liian lyhyt")
 
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
@@ -232,8 +237,8 @@ def change_course_name():
     if not admin:
         abort(403)
 
-    sql = text("UPDATE courses SET name=:course_name WHERE id=:course_id;")
-    db.session.execute(sql, {"course_name":course_name, "course_id":course_id})
+    sql = text("UPDATE courses SET name=:course_title WHERE id=:course_id;")
+    db.session.execute(sql, {"course_title":course_title, "course_id":course_id})
     db.session.commit()
 
     return redirect("/course/" + str(course_id))
@@ -286,6 +291,11 @@ def add_material():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
+    if len(material_answer) > 500:
+        return render_template("error.html", message="Materiaali on liian pitkä")
+    if len(material_answer) < 1:
+        return render_template("error.html", message="Materiaali on liian lyhyt")
+
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
@@ -324,6 +334,11 @@ def change_material():
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
+
+    if len(material_text) > 500:
+        return render_template("error.html", message="Materiaali on liian pitkä")
+    if len(material_text) < 1:
+        return render_template("error.html", message="Materiaali on liian lyhyt")
 
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
@@ -377,6 +392,15 @@ def add_text_question():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
+    if len(question) > 100:
+        return render_template("error.html", message="Kysymys on liian pitkä")
+    if len(question) < 1:
+        return render_template("error.html", message="Kysymys on liian lyhyt")
+    if len(answer) > 200:
+        return render_template("error.html", message="Vastaus on liian pitkä")
+    if len(answer) < 1:
+        return render_template("error.html", message="Vastaus on liian lyhyt")
+
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
@@ -403,6 +427,17 @@ def add_multiplec_question():
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
+
+    if len(question) > 100:
+        return render_template("error.html", message="Kysymys on liian pitkä")
+    if len(question) < 1:
+        return render_template("error.html", message="Kysymys on liian lyhyt")
+
+    for choice in choices:
+        if len(choice) > 50:
+            return render_template("error.html", message="Vastaus on liian pitkä")
+        if len(choice) < 1:
+            return render_template("error.html", message="Vastaus on liian lyhyt")
 
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
@@ -523,6 +558,11 @@ def change_tquestion_title():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
+    if len(tquestion_title) > 100:
+        return render_template("error.html", message="Kysymys on liian pitkä")
+    if len(tquestion_title) < 1:
+        return render_template("error.html", message="Kysymys on liian lyhyt")
+
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
@@ -549,6 +589,11 @@ def change_tquestion_answer():
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
+
+    if len(tquestion_answer) > 200:
+        return render_template("error.html", message="Vastaus on liian pitkä")
+    if len(tquestion_answer) < 1:
+        return render_template("error.html", message="Vastaus on liian lyhyt")
 
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
@@ -597,6 +642,11 @@ def change_mcquestion_title():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
+    if len(mcquestion_title) > 100:
+        return render_template("error.html", message="Kysymys on liian pitkä")
+    if len(mcquestion_title) < 1:
+        return render_template("error.html", message="Kysymys on liian lyhyt")
+
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
@@ -624,6 +674,12 @@ def change_mcquestion_answer():
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
+
+    for choice in choices:
+        if len(choice) > 50:
+            return render_template("error.html", message="Vastaus on liian pitkä")
+        if len(choice) < 1:
+            return render_template("error.html", message="Vastaus on liian lyhyt")
 
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
@@ -671,6 +727,11 @@ def answer_text_question():
     user_id = session["id"]
     question_id = request.form["question_id"]
     course_id = request.form["course_id"]
+
+    if len(text_question_answer) > 200:
+        return render_template("error.html", message="Vastaus on liian pitkä")
+    if len(text_question_answer) < 1:
+        return render_template("error.html", message="Vastaus on liian lyhyt")
 
     sql = text("SELECT id, answer FROM textquestions WHERE id=:question_id " +
                "AND visible=True;")

@@ -6,7 +6,8 @@
 {% if admin %}
 <fieldset>
 <form action="/change_course_title" method="POST">
-    <legend><b>Muuta kurssin nimeä:</b></legend><br>
+    <legend><b>Muuta kurssin nimeä:</b></legend>
+    (1-50 merkkiä)<br>
     <textarea name="course_title" rows="1" cols="40"></textarea>
     <br>
     <input type="submit" value="Päivitä">
@@ -58,7 +59,8 @@
 {% if admin %}
 <fieldset>
 <form action="/add_material" method="POST">
-    <legend><b>Lisää materiaalia:</b></legend><br>
+    <legend><b>Lisää materiaalia:</b></legend>
+    (1-500 merkkiä)<br>
     <textarea name="material_answer" rows="3" cols="40"></textarea>
     <br>
     <input type="submit" value="Lisää">
@@ -109,11 +111,11 @@
 <fieldset>
 <form action="/add_text_question" method="POST">
     <legend><b>Lisää tekstikysymys</b></legend><br>
-    Kysymys:
+    Kysymys: (1-100 merkkiä)
     <br>
     <textarea name="question" rows="3" cols="40"></textarea>
     <br>
-    Vastaus:
+    Vastaus: (1-200 merkkiä)
     <br>
     <textarea name="answer" rows="3" cols="40"></textarea>
     <br>
@@ -146,11 +148,11 @@
 <fieldset>
 <form action="/add_multiplec_question" method="POST">
     <legend><b>Lisää monivalintakysymys</b></legend><br>
-    Kysymys:
+    Kysymys: (1-100 merkkiä)
     <br>
     <textarea name="question" rows="3" cols="40"></textarea>
     <br>
-    Vastaus:
+    Vastaus: (1-50 merkkiä)
     <br>
     1. vaihtoehto
     <br>
