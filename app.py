@@ -1,16 +1,16 @@
 """Module information."""
 
 from os import getenv
-import secrets
 from flask import Flask
+import secrets
 from flask import redirect, render_template, request, session, abort, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///xxxxxx" #getenv("DATABASE_URL") problem
 app.secret_key = getenv("SECRET_KEY")
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///danfordn" #getenv("DATABASE_URL") problem
 db = SQLAlchemy(app)
 
 @app.route("/")
@@ -92,7 +92,7 @@ def signup2():
     db.session.execute(sql, {"username":username, "hash_value":hash_value})
     db.session.commit()
 
-    return redirect("index.html")
+    return redirect("/")
 
 @app.route("/courses")
 def courses():
@@ -169,14 +169,14 @@ def course(course_id):
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
     admin = result.fetchone()[1]
-    print(admin, "admin")
     sql = text("SELECT id, name FROM courses WHERE id=:course_id;")
     result = db.session.execute(sql, {"course_id":course_id})
     course_info = result.fetchone()
     sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:course_id;")
     result = db.session.execute(sql, {"username_id":username_id, "course_id":course_id})
     join = result.fetchone()
-    sql = text("SELECT id, material FROM materials WHERE course_id=:course_id AND visible=True;")
+    sql = text("SELECT id, material FROM materials WHERE course_id=:course_id AND visible=True " +
+               "ORDER BY id ASC;")
     result = db.session.execute(sql, {"course_id":course_id})
     materials = result.fetchall()
     sql = text("SELECT id, question FROM textquestions WHERE course_id=:course_id AND " +
@@ -186,36 +186,36 @@ def course(course_id):
     sql = text("SELECT id, question FROM multiplechoicequestions WHERE course_id=:course_id AND " +
                "visible=True ORDER BY id;")
     result = db.session.execute(sql, {"course_id":course_id})
-    multiple_choice_questions = result.fetchall()
+    mc_questions = result.fetchall()
     sql = text("SELECT t.question FROM textquestions t, usersquestions u WHERE t.id=u.question_id" +
                " AND u.course_id=:course_id AND u.user_id=:user_id AND u.type=1 AND " +
                "t.visible=True ORDER BY t.id;")
     result = db.session.execute(sql, {"course_id":course_id, "user_id":username_id})
-    text_question_answers = result.fetchall()
+    tq_answers = result.fetchall()
     sql = text("SELECT m.question FROM multiplechoicequestions m, usersquestions u " +
                "WHERE m.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND " +
                "u.type=2 AND m.visible=True ORDER BY m.id;")
     result = db.session.execute(sql, {"course_id":course_id, "user_id":username_id})
-    multiplec_question_answers = result.fetchall()
+    mcq_answers = result.fetchall()
     sql = text("SELECT u.id, u.username FROM users u, userscourses o, courses c " +
                "WHERE u.id=o.user_id AND o.course_id=c.id AND c.name=:course_name;")
     result = db.session.execute(sql, {"course_name":course_info.name})
     course_enrolled = result.fetchall()
-    print(course_enrolled, "course_enrolled")
+    print(join, "Onko: join")
     return render_template("course.html",
                            course_info=course_info, join=join, materials=materials,
-                           text_questions=text_questions, text_questions_total=
+                           text_questions=text_questions, tq_total=
                            len(text_questions),
-                           text_question_answers=text_question_answers,
-                           text_question_answers_total=len(text_question_answers),
-                           multiple_choice_questions=multiple_choice_questions,
-                           multiplec_question_total=len(multiple_choice_questions),
-                           multiplec_question_answers=multiplec_question_answers,
-                           multiplec_question_answers_total=len(multiplec_question_answers),
+                           tq_answers=tq_answers,
+                           tq_answers_total=len(tq_answers),
+                           mc_questions=mc_questions,
+                           mcq_total=len(mc_questions),
+                           mcq_answers=mcq_answers,
+                           mcq_answers_total=len(mcq_answers),
                            course_enrolled=course_enrolled, admin=admin)
 
-@app.route("/change_course_title", methods=["POST"])
-def change_course_title():
+@app.route("/change_ct", methods=["POST"])
+def change_ct():
     """Function information."""
 
     course_title = request.form["course_title"]
@@ -356,12 +356,12 @@ def change_material():
 
     return redirect("/course/" + str(course_id))
 
-@app.route("/remove_text_question", methods=["POST"])
-def remove_text_question():
+@app.route("/remove_tq", methods=["POST"])
+def remove_tq():
     """Function information."""
 
     course_id = request.form["course_id"]
-    text_question_id = request.form["text_question_id"]
+    tq_id = request.form["tq_id"]
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
@@ -374,15 +374,15 @@ def remove_text_question():
     if not admin:
         abort(403)
 
-    sql = text("UPDATE textquestions SET visible=False WHERE id=:text_question_id " +
+    sql = text("UPDATE textquestions SET visible=False WHERE id=:tq_id " +
                "AND course_id=:course_id;")
-    db.session.execute(sql, {"text_question_id": text_question_id, "course_id":course_id})
+    db.session.execute(sql, {"tq_id": tq_id, "course_id":course_id})
     db.session.commit()
 
     return redirect("/course/" + str(course_id))
 
-@app.route("/add_text_question", methods=["POST"])
-def add_text_question():
+@app.route("/add_tq", methods=["POST"])
+def add_tq():
     """Function information."""
 
     question = request.form["question"]
@@ -416,8 +416,8 @@ def add_text_question():
 
     return redirect("/course/" + str(course_id))
 
-@app.route("/add_multiplec_question", methods=["POST"])
-def add_multiplec_question():
+@app.route("/add_mcq", methods=["POST"])
+def add_mcq():
     """Function information."""
 
     question = request.form["question"]
@@ -447,19 +447,12 @@ def add_multiplec_question():
     if not admin:
         abort(403)
 
-    print(question, "question")
-    print(answer, "answer")
-    print(choices, "choices")
-    print(choices[int(answer)-1], "choices[int(answer)-1]")
-
     sql = text("INSERT INTO multiplechoicequestions VALUES (DEFAULT, " +
                ":course_id, :answer, :question, DEFAULT) RETURNING id;")
     result = db.session.execute(sql, {"course_id":course_id, "answer":choices[int(answer)-1],
                                       "question":question})
     db.session.commit()
     last_inserted_id = result.fetchone()[0]
-
-    print(last_inserted_id, "last_inserted_id")
 
     for choice in choices:
         if choice != "":
@@ -469,12 +462,12 @@ def add_multiplec_question():
 
     return redirect("/course/" + str(course_id))
 
-@app.route("/remove_multiplec_question", methods=["POST"])
-def remove_multiplec_question():
+@app.route("/remove_mcq", methods=["POST"])
+def remove_mcq():
     """Function information."""
 
     course_id = request.form["course_id"]
-    multiplec_question_id = request.form["multiplec_question_id"]
+    mcq_id = request.form["mcq_id"]
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
@@ -487,9 +480,9 @@ def remove_multiplec_question():
     if not admin:
         abort(403)
 
-    sql = text("UPDATE multiplechoicequestions SET visible=False WHERE id=:multiplec_question_id " +
+    sql = text("UPDATE multiplechoicequestions SET visible=False WHERE id=:mcq_id " +
                "AND course_id=:course_id;")
-    db.session.execute(sql, {"multiplec_question_id": multiplec_question_id, "course_id":course_id})
+    db.session.execute(sql, {"mcq_id": mcq_id, "course_id":course_id})
     db.session.commit()
 
     return redirect("/course/" + str(course_id))
@@ -510,27 +503,26 @@ def enrolled(course_id, student_id):
     sql = text("SELECT id, question FROM multiplechoicequestions WHERE course_id=:course_id AND " +
                "visible=True;")
     result = db.session.execute(sql, {"course_id":course_id})
-    multiple_choice_questions = result.fetchall()
+    mc_questions = result.fetchall()
     sql = text("SELECT t.question FROM textquestions t, usersquestions u " +
                "WHERE t.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND " +
                "u.type=1 AND t.visible=True;")
     result = db.session.execute(sql, {"course_id":course_id, "user_id":student_id})
-    text_question_answers = result.fetchall()
+    tq_answers = result.fetchall()
     sql = text("SELECT m.question FROM multiplechoicequestions m, usersquestions u " +
                "WHERE m.id=u.question_id AND u.course_id=:course_id AND u.user_id=:user_id AND " +
                "u.type=2 AND m.visible=True")
     result = db.session.execute(sql, {"course_id":course_id, "user_id":student_id})
-    multiplec_question_answers = result.fetchall()
-    print(student, "student")
+    mcq_answers = result.fetchall()
     return render_template("enrolled.html", course_info=course_info,
                            text_questions=text_questions, student=student,
-                           text_questions_total=len(text_questions),
-                           text_question_answers=text_question_answers,
-                           text_question_answers_total=len(text_question_answers),
-                           multiple_choice_questions=multiple_choice_questions,
-                           multiplec_question_total=len(multiple_choice_questions),
-                           multiplec_question_answers=multiplec_question_answers,
-                           multiplec_question_answers_total=len(multiplec_question_answers))
+                           tq_total=len(text_questions),
+                           tq_answers=tq_answers,
+                           tq_answers_total=len(tq_answers),
+                           #multiple_choice_questions=mc_questions,
+                           mcq_total=len(mc_questions),
+                           mcq_answers=mcq_answers,
+                           mcq_answers_total=len(mcq_answers))
 
 @app.route("/course/<int:course_id>/text_question/<int:text_question_id>")
 def multiple_choice(course_id, text_question_id):
@@ -543,24 +535,23 @@ def multiple_choice(course_id, text_question_id):
                " id=:text_question_id AND visible=True;")
     result = db.session.execute(sql, {"text_question_id":text_question_id})
     question = result.fetchone()
-    print(question.question, "question.question")
     return render_template("text_question.html",
                            course_id=course_id, question=question, admin=admin)
 
-@app.route("/change_tquestion_title", methods=["POST"])
-def change_tquestion_title():
+@app.route("/change_tq_title", methods=["POST"])
+def change_tq_title():
     """Function information."""
 
     course_id = request.form["course_id"]
     question_id = request.form["question_id"]
-    tquestion_title = request.form["tquestion_title"]
+    tq_title = request.form["tq_title"]
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    if len(tquestion_title) > 100:
+    if len(tq_title) > 100:
         return render_template("error.html", message="Kysymys on liian pitkä")
-    if len(tquestion_title) < 1:
+    if len(tq_title) < 1:
         return render_template("error.html", message="Kysymys on liian lyhyt")
 
     username_id = session["id"]
@@ -571,28 +562,28 @@ def change_tquestion_title():
     if not admin:
         abort(403)
 
-    sql = text("UPDATE textquestions SET question=:tquestion_title WHERE id=:question_id" +
+    sql = text("UPDATE textquestions SET question=:tq_title WHERE id=:question_id" +
                " AND course_id=:course_id;")
     db.session.execute(sql, {"question_id": question_id, "course_id":course_id,
-                             "tquestion_title":tquestion_title})
+                             "tq_title":tq_title})
     db.session.commit()
 
     return redirect("/course/" + str(course_id))
 
-@app.route("/change_tquestion_answer", methods=["POST"])
-def change_tquestion_answer():
+@app.route("/change_tq_answer", methods=["POST"])
+def change_tq_answer():
     """Function information."""
 
     course_id = request.form["course_id"]
     question_id = request.form["question_id"]
-    tquestion_answer = request.form["tquestion_answer"]
+    tq_answer = request.form["tq_answer"]
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    if len(tquestion_answer) > 200:
+    if len(tq_answer) > 200:
         return render_template("error.html", message="Vastaus on liian pitkä")
-    if len(tquestion_answer) < 1:
+    if len(tq_answer) < 1:
         return render_template("error.html", message="Vastaus on liian lyhyt")
 
     username_id = session["id"]
@@ -603,48 +594,47 @@ def change_tquestion_answer():
     if not admin:
         abort(403)
 
-    sql = text("UPDATE textquestions SET answer=:tquestion_answer WHERE id=:question_id" +
+    sql = text("UPDATE textquestions SET answer=:tq_answer WHERE id=:question_id" +
                " AND course_id=:course_id;")
     db.session.execute(sql, {"question_id": question_id, "course_id":course_id,
-                             "tquestion_answer":tquestion_answer})
+                             "tq_answer":tq_answer})
     db.session.commit()
 
     return redirect("/course/" + str(course_id))
 
-@app.route("/course/<int:course_id>/multiple_choice/<int:multiple_choice_question_id>")
-def text_question(course_id, multiple_choice_question_id):
+@app.route("/course/<int:course_id>/multiple_choice/<int:mcq_id>")
+def text_question(course_id, mcq_id):
     """Function information."""
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
     admin = result.fetchone()[1]
     sql = text("SELECT id, option FROM multiplechoiceoptions WHERE " +
-               "multiplechoicequestion_id=:multiple_choice_question_id;")
-    result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
+               "multiplechoicequestion_id=:mcq_id;")
+    result = db.session.execute(sql, {"mcq_id":mcq_id})
     choices = result.fetchall()
     sql = text("SELECT id, question, answer FROM multiplechoicequestions WHERE " +
-               "id=:multiple_choice_question_id AND visible=True;")
-    result = db.session.execute(sql, {"multiple_choice_question_id":multiple_choice_question_id})
+               "id=:mcq_id AND visible=True;")
+    result = db.session.execute(sql, {"mcq_id":mcq_id})
     question = result.fetchone()
-    print(question.question, "question_text")
     return render_template("multiple_choice.html",
                            course_id=course_id, choices=choices,
                            question=question, admin=admin)
 
-@app.route("/change_mcquestion_title", methods=["POST"])
-def change_mcquestion_title():
+@app.route("/change_mcq_title", methods=["POST"])
+def change_mcq_title():
     """Function information."""
 
     course_id = request.form["course_id"]
     question_id = request.form["question_id"]
-    mcquestion_title = request.form["mcquestion_title"]
+    mcq_title = request.form["mcq_title"]
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    if len(mcquestion_title) > 100:
+    if len(mcq_title) > 100:
         return render_template("error.html", message="Kysymys on liian pitkä")
-    if len(mcquestion_title) < 1:
+    if len(mcq_title) < 1:
         return render_template("error.html", message="Kysymys on liian lyhyt")
 
     username_id = session["id"]
@@ -655,16 +645,16 @@ def change_mcquestion_title():
     if not admin:
         abort(403)
 
-    sql = text("UPDATE multiplechoicequestions SET question=:mcquestion_title " +
+    sql = text("UPDATE multiplechoicequestions SET question=:mcq_title " +
                "WHERE id=:question_id AND course_id=:course_id;")
     db.session.execute(sql, {"question_id": question_id, "course_id":course_id,
-                             "mcquestion_title":mcquestion_title})
+                             "mcq_title":mcq_title})
     db.session.commit()
 
     return redirect("/course/" + str(course_id))
 
-@app.route("/change_mcquestion_answer", methods=["POST"])
-def change_mcquestion_answer():
+@app.route("/change_mcq_answer", methods=["POST"])
+def change_mcq_answer():
     """Function information."""
 
     choices = request.form.getlist("choice")
@@ -689,11 +679,6 @@ def change_mcquestion_answer():
     if not admin:
         abort(403)
 
-    print(choices, "options")
-    print(answer, "answer")
-    print(course_id, "course_id")
-    print(question_id, "question_id")
-
     sql = text("UPDATE multiplechoicequestions SET answer=:answer " +
                "WHERE id=:question_id AND course_id=:course_id;")
     db.session.execute(sql, {"course_id":course_id, "answer":choices[int(answer)-1],
@@ -716,29 +701,29 @@ def change_mcquestion_answer():
 
     return redirect("/course/" + str(course_id))
 
-@app.route("/answer_text_question", methods=["POST"])
-def answer_text_question():
+@app.route("/answer_tq", methods=["POST"])
+def answer_tq():
     """Function information."""
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    text_question_answer = request.form["text_question_answer"]
+    tq_answer = request.form["tq_answer"]
     user_id = session["id"]
     question_id = request.form["question_id"]
     course_id = request.form["course_id"]
 
-    if len(text_question_answer) > 200:
+    if len(tq_answer) > 200:
         return render_template("error.html", message="Vastaus on liian pitkä")
-    if len(text_question_answer) < 1:
+    if len(tq_answer) < 1:
         return render_template("error.html", message="Vastaus on liian lyhyt")
 
     sql = text("SELECT id, answer FROM textquestions WHERE id=:question_id " +
                "AND visible=True;")
     result = db.session.execute(sql, {"question_id":question_id})
-    text_question = result.fetchone()
+    tq = result.fetchone()
 
-    if text_question.answer != text_question_answer:
+    if tq.answer != tq_answer:
         print("Väärä vastaus!")
         flash('Väärä vastaus!')
         return redirect("/course/" + str(course_id)) #message="Väärä vastaus!")
@@ -761,14 +746,14 @@ def answer_text_question():
     return redirect("/course/" + str(course_id)) #add error message e.g. ,
                                                 #message="Oikea vastaus!!"?
 
-@app.route("/answer_multiple_choice_question", methods=["POST"])
-def answer_multiple_choice_question():
+@app.route("/answer_mcq", methods=["POST"])
+def answer_mcq():
     """Function information."""
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    multiple_choice_question_answer = request.form["multiple_choice_question_answer"]
+    mcq_answer = request.form["mcq_answer"]
     user_id = session["id"]
     question_id = request.form["question_id"]
     course_id = request.form["course_id"]
@@ -776,12 +761,9 @@ def answer_multiple_choice_question():
     sql = text("SELECT id, answer FROM multiplechoicequestions WHERE id=:question_id AND " +
                "visible=True;")
     result = db.session.execute(sql, {"question_id":question_id})
-    multiple_choice_question = result.fetchone()
+    mcq = result.fetchone()
 
-    print(multiple_choice_question.answer, "multiple_choice_question.answer")
-    print(multiple_choice_question_answer, "multiple_choice_question_answer")
-
-    if multiple_choice_question.answer != multiple_choice_question_answer:
+    if mcq.answer != mcq_answer:
         print("Väärä vastaus")
         flash('Väärä vastaus!')
         return redirect("/course/" + str(course_id)) #message="Väärä vastaus!")

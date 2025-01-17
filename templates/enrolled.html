@@ -7,19 +7,19 @@
 <hr>
 {% if text_questions %}
 <h3>Tehdyt tehtävät:</h3>
-<b>Tekstikysymykset: ({{ text_question_answers_total }}/{{ text_questions_total }})</b>
+<b>Tekstikysymykset: ({{ tq_answers_total }}/{{ tq_total }})</b>
 <br>
 <ul>
-{% for text_question_answer in text_question_answers %}
-<li><font color="green">{{ text_question_answer.question }}</font>
+{% for tq_answer in tq_answers %}
+<li><font color="green">{{ tq_answer.question }}</font>
 <br></li>
 {% endfor %}
 </ul>
-<b>Monivalintakysymykset: ({{ multiplec_question_answers_total }}/{{ multiplec_question_total }})</b>
+<b>Monivalintakysymykset: ({{ mcq_answers_total }}/{{ mcq_total }})</b>
 <br>
 <ul>
-{% for multiplec_question_answer in multiplec_question_answers %}
-<li><font color="green">{{ multiplec_question_answer.question }}</font>
+{% for mcq_answer in mcq_answers %}
+<li><font color="green">{{ mcq_answer.question }}</font>
 <br></li>
 {% endfor %}
 </ul>

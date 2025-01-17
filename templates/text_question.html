@@ -11,9 +11,9 @@
 <p>{{ question.question }}</p>
 {% if admin %}
 <fieldset>
-<form action="/change_tquestion_title" method="POST">
+<form action="/change_tq_title" method="POST">
     Muuta tekstikysymystä: (1-100 merkkiä)<br>
-    <textarea name="tquestion_title" rows="1" cols="40"></textarea>
+    <textarea name="tq_title" rows="1" cols="40"></textarea>
     <br>
     <input type="submit" value="Päivitä">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -25,9 +25,9 @@
 <b>Alkuperäinen vastaus:</b>
 <p>{{ question.answer }}</p>
 <fieldset>
-<form action="/change_tquestion_answer" method="POST">
+<form action="/change_tq_answer" method="POST">
     Muuta vastausta: (1-200 merkkiä)<br>
-    <textarea name="tquestion_answer" rows="3" cols="40"></textarea>
+    <textarea name="tq_answer" rows="3" cols="40"></textarea>
     <br>
     <input type="submit" value="Päivitä">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -38,9 +38,9 @@
 {% endif %}
 {% if not admin %}
 <hr>
-<form action="/answer_text_question" method="POST">
+<form action="/answer_tq" method="POST">
     Vastaus: (1-200 merkkiä)<br>
-    <textarea name="text_question_answer" rows="3" cols="40"></textarea>
+    <textarea name="tq_answer" rows="3" cols="40"></textarea>
     <br>
     <input type="submit" value="Lähetä">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">

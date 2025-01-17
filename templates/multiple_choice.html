@@ -10,9 +10,9 @@
 <p>{{ question.question }}</p>
 {% if admin %}
 <fieldset>
-<form action="/change_mcquestion_title" method="POST">
+<form action="/change_mcq_title" method="POST">
     Muuta monivalintakysymystä: (1-100 merkkiä)<br>
-    <textarea name="mcquestion_title" rows="1" cols="40"></textarea>
+    <textarea name="mcq_title" rows="1" cols="40"></textarea>
     <br>
     <input type="submit" value="Päivitä">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -32,7 +32,7 @@
     </ul>
 </p>
 <fieldset>
-    <form action="/change_mcquestion_answer" method="POST">
+    <form action="/change_mcq_answer" method="POST">
         Muuta vastausvaihtoehtoja: (1-50 merkkiä)<br>
         1. vaihtoehto
         <br>
@@ -71,9 +71,9 @@
 {% if not admin %}
 {% if choices %}
 <hr>
-<form action="/answer_multiple_choice_question" method="POST">
+<form action="/answer_mcq" method="POST">
 {% for choice in choices %}
-<input type="radio" name="multiple_choice_question_answer" value="{{ choice.option }}"> 
+<input type="radio" name="mcq_answer" value="{{ choice.option }}"> 
 {{ choice.option }} <br>
 {% endfor %}
 <p>

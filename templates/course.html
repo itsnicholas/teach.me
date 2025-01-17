@@ -5,7 +5,7 @@
 <h1>{{ course_info.name }}</h1>
 {% if admin %}
 <fieldset>
-<form action="/change_course_title" method="POST">
+<form action="/change_ct" method="POST">
     <legend><b>Muuta kurssin nimeä:</b></legend>
     (1-50 merkkiä)<br>
     <textarea name="course_title" rows="1" cols="40"></textarea>
@@ -69,39 +69,39 @@
 </form>
 </fieldset>
 {% endif %}
+{% if join %}
 <hr>
-{% if text_questions %}
-{% if not admin %}
 <h3>Tehdyt tehtävät:</h3>
-<b>Tekstikysymykset: ({{ text_question_answers_total }}/{{ text_questions_total }})</b>
+<b>Tekstikysymykset: ({{ tq_answers_total }}/{{ tq_total }})</b>
 <br>
 <ul>
-{% for text_question_answer in text_question_answers %}
-<li><font color="green">{{ text_question_answer.question }}</font>
+{% for tq_answer in tq_answers %}
+<li><font color="green">{{ tq_answer.question }}</font>
 <br></li>
 {% endfor %}
 </ul>
-<b>Monivalintakysymykset: ({{ multiplec_question_answers_total }}/{{ multiplec_question_total }})</b>
+<b>Monivalintakysymykset: ({{ mcq_answers_total }}/{{ mcq_total }})</b>
 <br>
 <ul>
-{% for multiplec_question_answer in multiplec_question_answers %}
-<li><font color="green">{{ multiplec_question_answer.question }}</font>
+{% for mcq_answer in mcq_answers %}
+<li><font color="green">{{ mcq_answer.question }}</font>
 <br></li>
 {% endfor %}
 </ul>
-<hr>
 {% endif %}
+{% if join or admin %}
+<hr>
 <h3>Tekstikysymykset:</h3>
 <ul>
 {% for text_question in text_questions %}
 <li><a href="/course/{{ course_info.id }}/text_question/{{ text_question.id }}">
 {{ text_question.question }}</a>
 {% if admin %}
-<form action="/remove_text_question" method="POST">
+<form action="/remove_tq" method="POST">
     <input type="submit" value="Poista kysymys">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
-    <input type="hidden" name="text_question_id" value="{{ text_question.id }}">
+    <input type="hidden" name="tq_id" value="{{ text_question.id }}">
 </form>
 {% endif %}
 <br></li>
@@ -109,7 +109,7 @@
 </ul>
 {% if admin %}
 <fieldset>
-<form action="/add_text_question" method="POST">
+<form action="/add_tq" method="POST">
     <legend><b>Lisää tekstikysymys</b></legend><br>
     Kysymys: (1-100 merkkiä)
     <br>
@@ -125,20 +125,18 @@
 </form>
 </fieldset>
 {% endif %}
-{% endif %}
 <hr>
-{% if multiple_choice_questions %}
 <h3>Monivalintakysymykset:</h3>
 <ul>
-{% for multiple_choice_question in multiple_choice_questions %}
-<li><a href="/course/{{ course_info.id }}/multiple_choice/{{ multiple_choice_question.id }}">
-{{ multiple_choice_question.question }}</a>
+{% for mcq in mc_questions %}
+<li><a href="/course/{{ course_info.id }}/multiple_choice/{{ mcq.id }}">
+{{ mcq.question }}</a>
 {% if admin %}
-<form action="/remove_multiplec_question" method="POST">
+<form action="/remove_mcq" method="POST">
     <input type="submit" value="Poista kysymys">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
-    <input type="hidden" name="multiplec_question_id" value="{{ multiple_choice_question.id }}">
+    <input type="hidden" name="mcq_id" value="{{ mcq.id }}">
 </form>
 {% endif %}
 <br></li>
@@ -146,7 +144,7 @@
 </ul>
 {% if admin %}
 <fieldset>
-<form action="/add_multiplec_question" method="POST">
+<form action="/add_mcq" method="POST">
     <legend><b>Lisää monivalintakysymys</b></legend><br>
     Kysymys: (1-100 merkkiä)
     <br>
@@ -187,8 +185,8 @@
 </form>
 </fieldset>
 {% endif %}
-<hr>
 {% endif %}
+<hr>
 
 <a href="/courses">Takaisin</a>
 {% endblock %}
