@@ -519,7 +519,6 @@ def enrolled(course_id, student_id):
                            tq_total=len(text_questions),
                            tq_answers=tq_answers,
                            tq_answers_total=len(tq_answers),
-                           #multiple_choice_questions=mc_questions,
                            mcq_total=len(mc_questions),
                            mcq_answers=mcq_answers,
                            mcq_answers_total=len(mcq_answers))
@@ -725,7 +724,7 @@ def answer_tq():
 
     if tq.answer != tq_answer:
         print("Väärä vastaus!")
-        flash('Väärä vastaus!')
+        flash("Väärä vastaus!")
         return redirect("/course/" + str(course_id)) #message="Väärä vastaus!")
 
     sql = text("SELECT id FROM usersquestions WHERE course_id=:course_id AND " +
@@ -765,7 +764,7 @@ def answer_mcq():
 
     if mcq.answer != mcq_answer:
         print("Väärä vastaus")
-        flash('Väärä vastaus!')
+        flash("Väärä vastaus!")
         return redirect("/course/" + str(course_id)) #message="Väärä vastaus!")
 
     sql = text("SELECT id FROM usersquestions WHERE course_id=:course_id AND " +
