@@ -1,0 +1,12 @@
+body {
+    margin: auto;
+    max-width: 50em;
+    font-family: sans-serif;
+    background-color: lightgray;
+}
+
+fieldset {
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+}
