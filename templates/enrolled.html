@@ -10,21 +10,24 @@
 <b>Tekstikysymykset: ({{ tq_answers_total }}/{{ tq_total }})</b>
 <br>
 <ul>
-{% for tq_answer in tq_answers %}
-<li><font color="green">{{ tq_answer.question }}</font>
-<br></li>
-{% endfor %}
+    {% for tq_answer in tq_answers %}
+    <li>
+        <font color="green">{{ tq_answer.question }}</font>
+        <br>
+    </li>
+    {% endfor %}
 </ul>
 <b>Monivalintakysymykset: ({{ mcq_answers_total }}/{{ mcq_total }})</b>
 <br>
 <ul>
-{% for mcq_answer in mcq_answers %}
-<li><font color="green">{{ mcq_answer.question }}</font>
-<br></li>
-{% endfor %}
+    {% for mcq_answer in mcq_answers %}
+    <li>
+        <font color="green">{{ mcq_answer.question }}</font>
+        <br>
+    </li>
+    {% endfor %}
 </ul>
 <hr>
 {% endif %}
-
 <a href="/course/{{ course_info.id }}">Takaisin</a>
 {% endblock %}

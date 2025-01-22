@@ -8,15 +8,16 @@
 <br>
 <p>{{ material_text }}</p>
 <fieldset>
-<form action="/change_material" method="POST">
-    Muuta materiaalia: (1-500 merkkiä)<br>
-    <textarea name="material_text" rows="3" cols="40"></textarea>
-    <br>
-    <input type="submit" value="Päivitä">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="material_id" value="{{ material_id }}">
-    <input type="hidden" name="course_id" value="{{ course_id }}">
-</form>
+    <form action="/change_material" method="POST">
+        Muuta materiaalia: (1-500 merkkiä)
+        <br>
+        <textarea name="material_text" rows="3" cols="40"></textarea>
+        <br>
+        <input type="submit" value="Päivitä">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="hidden" name="material_id" value="{{ material_id }}">
+        <input type="hidden" name="course_id" value="{{ course_id }}">
+    </form>
 </fieldset>
 {% endif %}
 <hr>

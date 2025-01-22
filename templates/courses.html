@@ -4,7 +4,9 @@
 {% block content %}
 {% if session.username %}
 <h1>Kurssit</h1>
-<p>Olet kirjautunut nimellä <b>{{ session.username }}</b></p>
+<p>Olet kirjautunut nimellä
+    <b>{{ session.username }}</b>
+</p>
 <hr>
 <h3>Kurssilista:</h3>
 {% for course in courses_info %}
@@ -23,13 +25,14 @@
 <hr>
 <h3>Lisää kurssi:</h3>
 <fieldset>
-<form action="/add_course" method="POST">
-    Kurssin nimi: (1-50 merkkiä)<br>
-    <textarea name="course_name" rows="1" cols="40"></textarea>
-    <br>
-    <input type="submit" value="Lisää">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-</form>
+    <form action="/add_course" method="POST">
+        Kurssin nimi: (1-50 merkkiä)
+        <br>
+        <textarea name="course_name" rows="1" cols="40"></textarea>
+        <br>
+        <input type="submit" value="Lisää">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
 </fieldset>
 {% endif %}
 <hr>

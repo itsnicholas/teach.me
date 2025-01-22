@@ -1,5 +1,3 @@
-"""Module information."""
-
 from os import getenv
 from flask import Flask
 import secrets
@@ -10,17 +8,15 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = getenv("SECRET_KEY")
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///danfordn" #getenv("DATABASE_URL") problem
+app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
-    """Function information."""
     return render_template("index.html")
 
 @app.route("/login", methods=["POST"])
 def login():
-    """Function information."""
     username = request.form["username"]
     password = request.form["password"]
 
@@ -38,65 +34,58 @@ def login():
     user = result.fetchone()
 
     if not user:
-        # invalid username
         return render_template("index.html", message="Käyttäjätunnus on väärä")
     else:
         hash_value = user.password
-        # correct username and password
         if check_password_hash(hash_value, password):
             session["id"] = user.id
             session["username"] = username
             session["csrf_token"] = secrets.token_hex(16)
             return redirect("/courses")
 
-        # invalid password
         return render_template("index.html", message="Salasana on väärä")
 
 @app.route("/logout")
 def logout():
-    """Function information."""
     del session["username"]
     return redirect("/")
 
-@app.route("/signup")
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
-    """Function information."""
-    return render_template("signup.html")
+    if request.method == "GET":
+        return render_template("signup.html")
 
-@app.route("/signup", methods=["POST"])
-def signup2():
-    """Function information."""
-    username = request.form["username"]
-    password = request.form["password"]
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
 
-    if len(username) > 16:
-        return render_template("signup.html", message="Tunnus on liian pitkä")
-    if len(username) < 1:
-        return render_template("signup.html", message="Tunnus on liian lyhyt")
-    if len(password) > 16:
-        return render_template("signup.html", message="Salasana on liian pitkä")
-    if len(password) < 8:
-        return render_template("signup.html", message="Salasana on liian lyhyt")
+        if len(username) > 16:
+            return render_template("signup.html", message="Tunnus on liian pitkä")
+        if len(username) < 1:
+            return render_template("signup.html", message="Tunnus on liian lyhyt")
+        if len(password) > 16:
+            return render_template("signup.html", message="Salasana on liian pitkä")
+        if len(password) < 8:
+            return render_template("signup.html", message="Salasana on liian lyhyt")
 
-    sql = text("SELECT id, password FROM users WHERE username=:username;")
-    result = db.session.execute(sql, {"username":username})
-    user = result.fetchone()
+        sql = text("SELECT id, password FROM users WHERE username=:username;")
+        result = db.session.execute(sql, {"username":username})
+        user = result.fetchone()
 
-    if user:
-        return render_template("signup.html", message="Käyttäjätunnus on käytössä" +
-                               " - kokeile toista käyttäjätunnusta")
+        if user:
+            return render_template("signup.html", message="Käyttäjätunnus on käytössä" +
+                                " - kokeile toista käyttäjätunnusta")
 
-    # store username and password
-    hash_value = generate_password_hash(password)
-    sql = text("INSERT INTO users VALUES (DEFAULT, :username, :hash_value, false);")
-    db.session.execute(sql, {"username":username, "hash_value":hash_value})
-    db.session.commit()
+        # store username and password
+        hash_value = generate_password_hash(password)
+        sql = text("INSERT INTO users VALUES (DEFAULT, :username, :hash_value, false);")
+        db.session.execute(sql, {"username":username, "hash_value":hash_value})
+        db.session.commit()
 
-    return redirect("/")
+        return redirect("/")
 
 @app.route("/courses")
 def courses():
-    """Function information."""
     username_id = session["id"]
     sql = text("SELECT id, name FROM courses WHERE visible=True ORDER BY id;")
     result = db.session.execute(sql)
@@ -108,8 +97,6 @@ def courses():
 
 @app.route("/add_course", methods=["POST"])
 def add_course():
-    """Function information."""
-
     course_name = request.form["course_name"]
 
     if session["csrf_token"] != request.form["csrf_token"]:
@@ -141,8 +128,6 @@ def add_course():
 
 @app.route("/remove_course", methods=["POST"])
 def remove_course():
-    """Function information."""
-
     course_id = request.form["course_id"]
 
     if session["csrf_token"] != request.form["csrf_token"]:
@@ -164,7 +149,6 @@ def remove_course():
 
 @app.route("/course/<int:course_id>")
 def course(course_id):
-    """Function information."""
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
@@ -216,8 +200,6 @@ def course(course_id):
 
 @app.route("/change_ct", methods=["POST"])
 def change_ct():
-    """Function information."""
-
     course_title = request.form["course_title"]
     course_id = request.form["course_id"]
 
@@ -245,8 +227,6 @@ def change_ct():
 
 @app.route("/enrol", methods=["POST"])
 def enrol():
-    """Function information."""
-
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
@@ -259,8 +239,6 @@ def enrol():
 
 @app.route("/remove_material", methods=["POST"])
 def remove_material():
-    """Function information."""
-
     course_id = request.form["course_id"]
     material_id = request.form["material_id"]
 
@@ -283,8 +261,6 @@ def remove_material():
 
 @app.route("/add_material", methods=["POST"])
 def add_material():
-    """Function information."""
-
     material_answer = request.form["material_answer"]
     course_id = request.form["course_id"]
 
@@ -312,7 +288,6 @@ def add_material():
 
 @app.route("/course/<int:course_id>/material/<int:material_id>")
 def material(course_id, material_id):
-    """Function information."""
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
@@ -326,8 +301,6 @@ def material(course_id, material_id):
 
 @app.route("/change_material", methods=["POST"])
 def change_material():
-    """Function information."""
-
     course_id = request.form["course_id"]
     material_id = request.form["material_id"]
     material_text = request.form["material_text"]
@@ -358,8 +331,6 @@ def change_material():
 
 @app.route("/remove_tq", methods=["POST"])
 def remove_tq():
-    """Function information."""
-
     course_id = request.form["course_id"]
     tq_id = request.form["tq_id"]
 
@@ -383,8 +354,6 @@ def remove_tq():
 
 @app.route("/add_tq", methods=["POST"])
 def add_tq():
-    """Function information."""
-
     question = request.form["question"]
     answer = request.form["answer"]
     course_id = request.form["course_id"]
@@ -418,8 +387,6 @@ def add_tq():
 
 @app.route("/add_mcq", methods=["POST"])
 def add_mcq():
-    """Function information."""
-
     question = request.form["question"]
     choices = request.form.getlist("choice")
     answer = request.form["answer"]
@@ -464,8 +431,6 @@ def add_mcq():
 
 @app.route("/remove_mcq", methods=["POST"])
 def remove_mcq():
-    """Function information."""
-
     course_id = request.form["course_id"]
     mcq_id = request.form["mcq_id"]
 
@@ -489,7 +454,6 @@ def remove_mcq():
 
 @app.route("/course/<int:course_id>/enrolled/<int:student_id>")
 def enrolled(course_id, student_id):
-    """Function information."""
     sql = text("SELECT id, name FROM courses WHERE id=:course_id;")
     result = db.session.execute(sql, {"course_id":course_id})
     course_info = result.fetchone()
@@ -525,7 +489,6 @@ def enrolled(course_id, student_id):
 
 @app.route("/course/<int:course_id>/text_question/<int:text_question_id>")
 def multiple_choice(course_id, text_question_id):
-    """Function information."""
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
@@ -539,8 +502,6 @@ def multiple_choice(course_id, text_question_id):
 
 @app.route("/change_tq_title", methods=["POST"])
 def change_tq_title():
-    """Function information."""
-
     course_id = request.form["course_id"]
     question_id = request.form["question_id"]
     tq_title = request.form["tq_title"]
@@ -571,8 +532,6 @@ def change_tq_title():
 
 @app.route("/change_tq_answer", methods=["POST"])
 def change_tq_answer():
-    """Function information."""
-
     course_id = request.form["course_id"]
     question_id = request.form["question_id"]
     tq_answer = request.form["tq_answer"]
@@ -603,7 +562,6 @@ def change_tq_answer():
 
 @app.route("/course/<int:course_id>/multiple_choice/<int:mcq_id>")
 def text_question(course_id, mcq_id):
-    """Function information."""
     username_id = session["id"]
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
@@ -622,8 +580,6 @@ def text_question(course_id, mcq_id):
 
 @app.route("/change_mcq_title", methods=["POST"])
 def change_mcq_title():
-    """Function information."""
-
     course_id = request.form["course_id"]
     question_id = request.form["question_id"]
     mcq_title = request.form["mcq_title"]
@@ -654,8 +610,6 @@ def change_mcq_title():
 
 @app.route("/change_mcq_answer", methods=["POST"])
 def change_mcq_answer():
-    """Function information."""
-
     choices = request.form.getlist("choice")
     answer = request.form["answer"]
     course_id = request.form["course_id"]
@@ -702,8 +656,6 @@ def change_mcq_answer():
 
 @app.route("/answer_tq", methods=["POST"])
 def answer_tq():
-    """Function information."""
-
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
@@ -716,17 +668,7 @@ def answer_tq():
         return render_template("error.html", message="Vastaus on liian pitkä")
     if len(tq_answer) < 1:
         return render_template("error.html", message="Vastaus on liian lyhyt")
-
-    sql = text("SELECT id, answer FROM textquestions WHERE id=:question_id " +
-               "AND visible=True;")
-    result = db.session.execute(sql, {"question_id":question_id})
-    tq = result.fetchone()
-
-    if tq.answer != tq_answer:
-        print("Väärä vastaus!")
-        flash("Väärä vastaus!")
-        return redirect("/course/" + str(course_id)) #message="Väärä vastaus!")
-
+    
     sql = text("SELECT id FROM usersquestions WHERE course_id=:course_id AND " +
                "user_id=:user_id AND type=1 AND question_id=:question_id;")
     result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id,
@@ -734,21 +676,28 @@ def answer_tq():
     answer_already = result.fetchone()
 
     if answer_already:
-        print("Vastasit jo oikein!")
-        return redirect("/course/" + str(course_id)) #message="Vastasit jo oikein!")
+        flash("Vastasit jo oikein!")
+        return redirect("/course/" + str(course_id))
+
+    sql = text("SELECT id, answer FROM textquestions WHERE id=:question_id " +
+               "AND visible=True;")
+    result = db.session.execute(sql, {"question_id":question_id})
+    tq = result.fetchone()
+
+    if tq.answer != tq_answer:
+        flash("Väärä vastaus!")
+        return redirect("/course/" + str(course_id) + "/text_question/" + str(question_id))
 
     sql = text("INSERT INTO usersquestions VALUES (DEFAULT, :course_id, :user_id, " +
                "1, :question_id);")
     db.session.execute(sql, {"course_id":course_id, "user_id":user_id,
                             "question_id":question_id})
     db.session.commit()
-    return redirect("/course/" + str(course_id)) #add error message e.g. ,
-                                                #message="Oikea vastaus!!"?
+    flash("Oikea vastaus!")
+    return redirect("/course/" + str(course_id))
 
 @app.route("/answer_mcq", methods=["POST"])
 def answer_mcq():
-    """Function information."""
-
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
@@ -757,16 +706,6 @@ def answer_mcq():
     question_id = request.form["question_id"]
     course_id = request.form["course_id"]
 
-    sql = text("SELECT id, answer FROM multiplechoicequestions WHERE id=:question_id AND " +
-               "visible=True;")
-    result = db.session.execute(sql, {"question_id":question_id})
-    mcq = result.fetchone()
-
-    if mcq.answer != mcq_answer:
-        print("Väärä vastaus")
-        flash("Väärä vastaus!")
-        return redirect("/course/" + str(course_id)) #message="Väärä vastaus!")
-
     sql = text("SELECT id FROM usersquestions WHERE course_id=:course_id AND " +
                "user_id=:user_id AND type=2 AND question_id=:question_id;")
     result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id,
@@ -774,14 +713,22 @@ def answer_mcq():
     answer_already = result.fetchone()
 
     if answer_already:
-        print("Vastasit jo oikein!")
-        return redirect("/course/" + str(course_id)) #message="Vastasit jo oikein!")
+        flash("Vastasit jo oikein!")
+        return redirect("/course/" + str(course_id))
+
+    sql = text("SELECT id, answer FROM multiplechoicequestions WHERE id=:question_id AND " +
+               "visible=True;")
+    result = db.session.execute(sql, {"question_id":question_id})
+    mcq = result.fetchone()
+
+    if mcq.answer != mcq_answer:
+        flash("Väärä vastaus!")
+        return redirect("/course/" + str(course_id) + "/multiple_choice/" + str(question_id))
 
     sql = text("INSERT INTO usersquestions VALUES (DEFAULT, :course_id, :user_id, " +
                "2, :question_id);")
     db.session.execute(sql, {"course_id":course_id, "user_id":user_id,
                             "question_id":question_id})
     db.session.commit()
-    print("Oikea vastaus lisätty")
-    return redirect("/course/" + str(course_id)) #add error message e.g. ,
-                                                #message="Oikea vastaus!!"?
+    flash("Oikea vastaus!")
+    return redirect("/course/" + str(course_id))

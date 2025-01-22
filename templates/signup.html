@@ -2,16 +2,22 @@
 {% extends "layout.html" %}
 {% block title %}Luo tili{% endblock %}
 {% block content %}
-<p><font color="red">{{ message }}</font></p>
+<p>
+    <font color="red">{{ message }}</font>
+</p>
 <h1>Luo tili</h1>
 <form action="/signup" method="POST" onsubmit="return check(this)">
-<p>Tunnus (1-16 merkkiä):<br>
-<input type="text" name="username"></p>
-<p>Salasana (8-16 merkkiä):<br>
-<input type="password" name="password"></p>
-<input type="submit" value="Luo tili">
+    <p>Tunnus (1-16 merkkiä):
+        <br>
+        <input type="text" name="username">
+    </p>
+    <p>Salasana (8-16 merkkiä):
+        <br>
+        <input type="password" name="password">
+    </p>
+    <input type="submit" value="Luo tili">
 </form>
 <form action="/">
-<input type="submit" value="Takaisin">
+    <input type="submit" value="Takaisin">
 </form>
 {% endblock %}

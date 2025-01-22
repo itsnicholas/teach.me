@@ -2,17 +2,23 @@
 {% extends "layout.html" %}
 {% block title %}Etusivu{% endblock %}
 {% block content %}
-<p><font color="red">{{ message }}</font></p>
+<p>
+    <font color="red">{{ message }}</font>
+</p>
 <h1>Tervetuloa!</h1>
 <p>Kirjaudu sisään</p>
 <form action="/login" method="POST" onsubmit="return check(this)">
-<p>Tunnus:<br>
-<input type="text" name="username"></p>
-<p>Salasana:<br>
-<input type="password" name="password"></p>
-<input type="submit" value="Kirjaudu">
+    <p>Tunnus:
+        <br>
+        <input type="text" name="username">
+    </p>
+    <p>Salasana:
+        <br>
+        <input type="password" name="password">
+    </p>
+    <input type="submit" value="Kirjaudu">
 </form>
 <form action="/signup">
-<input type="submit" value="Luo tili">
+    <input type="submit" value="Luo tili">
 </form>
 {% endblock %}

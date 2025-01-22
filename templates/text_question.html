@@ -6,40 +6,43 @@
 <h3>Tekstikysymys</h3>
 {% if admin %}
 <b>Alkuperäinen kysymys:</b>
-<br> 
+<br>
 {% endif %}
 <p>{{ question.question }}</p>
 {% if admin %}
 <fieldset>
-<form action="/change_tq_title" method="POST">
-    Muuta tekstikysymystä: (1-100 merkkiä)<br>
-    <textarea name="tq_title" rows="1" cols="40"></textarea>
-    <br>
-    <input type="submit" value="Päivitä">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="question_id" value="{{ question.id }}">
-    <input type="hidden" name="course_id" value="{{ question.course_id }}">
-</form>
+    <form action="/change_tq_title" method="POST">
+        Muuta tekstikysymystä: (1-100 merkkiä)
+        <br>
+        <textarea name="tq_title" rows="1" cols="40"></textarea>
+        <br>
+        <input type="submit" value="Päivitä">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        <input type="hidden" name="course_id" value="{{ question.course_id }}">
+    </form>
 </fieldset>
 <br>
 <b>Alkuperäinen vastaus:</b>
 <p>{{ question.answer }}</p>
 <fieldset>
-<form action="/change_tq_answer" method="POST">
-    Muuta vastausta: (1-200 merkkiä)<br>
-    <textarea name="tq_answer" rows="3" cols="40"></textarea>
-    <br>
-    <input type="submit" value="Päivitä">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="question_id" value="{{ question.id }}">
-    <input type="hidden" name="course_id" value="{{ question.course_id }}">
-</form>
+    <form action="/change_tq_answer" method="POST">
+        Muuta vastausta: (1-200 merkkiä)
+        <br>
+        <textarea name="tq_answer" rows="3" cols="40"></textarea>
+        <br>
+        <input type="submit" value="Päivitä">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        <input type="hidden" name="course_id" value="{{ question.course_id }}">
+    </form>
 </fieldset>
 {% endif %}
 {% if not admin %}
 <hr>
 <form action="/answer_tq" method="POST">
-    Vastaus: (1-200 merkkiä)<br>
+    Vastaus: (1-200 merkkiä)
+    <br>
     <textarea name="tq_answer" rows="3" cols="40"></textarea>
     <br>
     <input type="submit" value="Lähetä">
