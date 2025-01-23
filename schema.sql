@@ -1,21 +1,21 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
-    username TEXT UNIQUE,
-    password_hash TEXT,
-    admin BOOLEAN
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    admin BOOLEAN NOT NULL
 );
 
 CREATE TABLE userscourses (
     id INTEGER PRIMARY KEY,
-    user_id INTEGER REFERENCES users,
-    course_id INTEGER REFERENCES courses
+    user_id INTEGER REFERENCES users NOT NULL,
+    course_id INTEGER REFERENCES courses NOT NULL
 );
 
 CREATE TABLE materials (
     id INTEGER PRIMARY KEY,
-    course_id INTEGER REFERENCES courses,
+    course_id INTEGER REFERENCES courses NOT NULL,
     text TEXT,
-    visible BOOLEAN 
+    visible BOOLEAN
 );
 
 CREATE TABLE courses (
@@ -26,15 +26,15 @@ CREATE TABLE courses (
 
 CREATE TABLE usersquestions (
     id INTEGER PRIMARY KEY,
-    course_id INTEGER REFERENCES courses,
-    user_id INTEGER REFERENCES users,
-    type INTEGER,
-    question_id INTEGER
+    course_id INTEGER REFERENCES courses NOT NULL,
+    user_id INTEGER REFERENCES users NOT NULL,
+    type INTEGER NOT NULL,
+    question_id INTEGER NOT NULL
 );
 
 CREATE TABLE textquestions (
     id INTEGER PRIMARY KEY,
-    course_id INTEGER REFERENCES courses,
+    course_id INTEGER REFERENCES courses NOT NULL,
     question TEXT UNIQUE,
     answer TEXT,
     visible BOOLEAN
@@ -42,14 +42,14 @@ CREATE TABLE textquestions (
 
 CREATE TABLE multiplechoicequestions (
     id INTEGER PRIMARY KEY,
-    course_id INTEGER REFERENCES courses,
+    course_id INTEGER REFERENCES courses NOT NULL,
     answer TEXT,
     question TEXT UNIQUE,
-    visible BOOLEAN   
+    visible BOOLEAN
 );
 
 CREATE TABLE multiplechoiceoptions (
     id INTEGER PRIMARY KEY,
-    multiplechoicequestion_id INTEGER REFERENCES multiplechoicequestions,
+    multiplechoicequestion_id INTEGER REFERENCES multiplechoicequestions NOT NULL,
     option TEXT
 );
