@@ -20,7 +20,7 @@ CREATE TABLE materials (
 
 CREATE TABLE courses (
     id INTEGER PRIMARY KEY,
-    name TEXT UNIQUE,
+    name TEXT,
     visible BOOLEAN
 );
 
@@ -35,7 +35,7 @@ CREATE TABLE usersquestions (
 CREATE TABLE textquestions (
     id INTEGER PRIMARY KEY,
     course_id INTEGER REFERENCES courses NOT NULL,
-    question TEXT UNIQUE,
+    question TEXT,
     answer TEXT,
     visible BOOLEAN
 );
@@ -44,7 +44,7 @@ CREATE TABLE multiplechoicequestions (
     id INTEGER PRIMARY KEY,
     course_id INTEGER REFERENCES courses NOT NULL,
     answer TEXT,
-    question TEXT UNIQUE,
+    question TEXT,
     visible BOOLEAN
 );
 
