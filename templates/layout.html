@@ -2,7 +2,6 @@
 <link rel="stylesheet" href="/static/main.css">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>teach.me - {% block title %}{% endblock %}</title>
-<hr>
 {% with messages = get_flashed_messages()%}
 {% if messages%}
     {% for message in messages%}
@@ -11,4 +10,3 @@
 {%endif%}
 {%endwith%}
 {% block content %}{% endblock %}
-<hr>

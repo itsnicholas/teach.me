@@ -9,4 +9,31 @@ fieldset {
     border-style: solid;
     border-color: black;
     border-width: 1px;
+    border-radius: 0.25em;
+}
+
+.header {
+    background: salmon;
+    padding: 0.25em 1em;
+    border-radius: 0.25em;
+}
+
+.content {
+    background: white;
+    padding: 0.25em 1em;
+    border-radius: 0.25em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+ }
+
+.nav {
+    background: white;
+    padding: 0.25em 1em;
+    border-radius: 0.25em;
+    text-align: center;
+}
+
+.form {
+    background: rgb(253, 223, 219);
+    border-radius: 0.25em;
 }

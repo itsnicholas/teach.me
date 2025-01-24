@@ -2,32 +2,42 @@
 {% extends "layout.html" %}
 {% block title %}{{ course_info.name }}{% endblock %}
 {% block content %}
-<h1>{{ course_info.name }}</h1>
-<h3>Opiskelija: {{ student.username }}</h3>
-<hr>
-{% if text_questions %}
-<h3>Tehdyt tehtävät:</h3>
-<b>Tekstikysymykset: ({{ tq_answers_total }}/{{ tq_total }})</b>
 <br>
-<ul>
-    {% for tq_answer in tq_answers %}
-    <li>
-        <font color="green">{{ tq_answer.question }}</font>
-        <br>
-    </li>
-    {% endfor %}
-</ul>
-<b>Monivalintakysymykset: ({{ mcq_answers_total }}/{{ mcq_total }})</b>
+<div class="header">
+    <h1>{{ course_info.name }}</h1>
+</div>
 <br>
-<ul>
-    {% for mcq_answer in mcq_answers %}
-    <li>
-        <font color="green">{{ mcq_answer.question }}</font>
-        <br>
-    </li>
-    {% endfor %}
-</ul>
-<hr>
-{% endif %}
-<a href="/course/{{ course_info.id }}">Takaisin</a>
+<div class="content">
+    <h3>Opiskelija: {{ student.username }}</h3>
+    {% if text_questions or mc_questions%}
+    <hr>
+    <h3>Tehdyt tehtävät:</h3>
+    {% if text_questions %}
+    <b>Tekstikysymykset: ({{ tq_answers_total }}/{{ tq_total }})</b>
+    <br>
+    <ul>
+        {% for tq_answer in tq_answers %}
+        <li>
+            <font color="green">{{ tq_answer.question }}</font>
+            <br>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if mc_questions %}
+    <b>Monivalintakysymykset: ({{ mcq_answers_total }}/{{ mcq_total }})</b>
+    <br>
+    <ul>
+        {% for mcq_answer in mcq_answers %}
+        <li>
+            <font color="green">{{ mcq_answer.question }}</font>
+            <br>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endif %}
+</div>
+<br>
+<a href="/course/{{ course_info.id }}" class="nav">Takaisin</a>
 {% endblock %}

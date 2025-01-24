@@ -3,10 +3,13 @@
 {% block title %}Kurssit{% endblock %}
 {% block content %}
 {% if session.username %}
-<h1>Kurssit</h1>
-<p>Olet kirjautunut nimellä
-    <b>{{ session.username }}</b>
-</p>
+<div class="header">
+    <h1>Kurssit</h1>
+</div>
+<br>
+<div class="content">
+Olet kirjautunut nimellä
+<b>{{ session.username }}</b>
 <hr>
 <h3>Kurssilista:</h3>
 {% for course in courses_info %}
@@ -24,7 +27,7 @@
 {% if admin %}
 <hr>
 <h3>Lisää kurssi:</h3>
-<fieldset>
+<fieldset class="form">
     <form action="/add_course" method="POST">
         Kurssin nimi: (1-50 merkkiä)
         <br>
@@ -35,7 +38,8 @@
     </form>
 </fieldset>
 {% endif %}
-<hr>
-<a href="/logout">Kirjaudu ulos</a>
+</div>
+<br>
+<a href="/logout" class="nav">Kirjaudu ulos</a>
 {% endif %}
 {% endblock %}

@@ -2,9 +2,14 @@
 {% extends "layout.html" %}
 {% block title %}{{ course_info.name }}{% endblock %}
 {% block content %}
-<h1>{{ course_info.name }}</h1>
+<br>
+<div class="header">
+    <h1>{{ course_info.name }}</h1>
+</div>
+<br>
+<div class="content">
 {% if admin %}
-<fieldset >
+<fieldset class="form">
     <form action="/change_ct" method="POST">
         <legend>
             <b>Muuta kurssin nimeä:</b>
@@ -30,8 +35,8 @@
     {% endfor %}
 </ul>
 {% endif %}
-{% endif %}
 <hr>
+{% endif %}
 {% if not admin %}
 {% if join %}
 <h3>Olet ilmoittautunut!</h3>
@@ -42,14 +47,14 @@
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
 </form>
-<hr>
 {% endif %}
 {% endif %}
-{% if materials %}
 <h3>Materiaali:</h3>
-{% for material in materials %}
-<p>{{ material.material }}</p>
+{% if materials %}
 {% if admin %}
+{% for material in materials %}
+<fieldset>
+<p>{{ material.material }}</p>
 <a href="/course/{{ course_info.id }}/material/{{ material.id }}">Muuta materiaali</a>
 <form action="/remove_material" method="POST">
     <input type="submit" value="Poista materiaali">
@@ -57,12 +62,17 @@
     <input type="hidden" name="course_id" value="{{ course_info.id }}">
     <input type="hidden" name="material_id" value="{{ material.id }}">
 </form>
+</fieldset>
+{% endfor %}
 <br>
-{% endif %}
+{% else %}
+{% for material in materials %}
+<p>{{ material.material }}</p>
 {% endfor %}
 {% endif %}
+{% endif %}
 {% if admin %}
-<fieldset>
+<fieldset class="form">
     <form action="/add_material" method="POST">
         <legend>
             <b>Lisää materiaalia:</b>
@@ -123,7 +133,7 @@
     {% endfor %}
 </ul>
 {% if admin %}
-<fieldset>
+<fieldset class="form">
     <form action="/add_tq" method="POST">
         <legend>
             <b>Lisää tekstikysymys</b>
@@ -164,7 +174,7 @@
     {% endfor %}
 </ul>
 {% if admin %}
-<fieldset>
+<fieldset class="form">
     <form action="/add_mcq" method="POST">
         <legend>
             <b>Lisää monivalintakysymys</b>
@@ -231,7 +241,7 @@
 </fieldset>
 {% endif %}
 {% endif %}
-<hr>
-<a href="/courses">Takaisin</a>
+</div>
+<br>
+<a href="/courses" class="nav">Takaisin</a>
 {% endblock %}
-<p>{{message}}</p>

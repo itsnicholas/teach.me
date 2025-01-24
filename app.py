@@ -79,7 +79,6 @@ def signup():
             return render_template("signup.html", message="Käyttäjätunnus on käytössä" +
                                 " - kokeile toista käyttäjätunnusta")
 
-        # store username and password
         hash_value = generate_password_hash(password)
         sql = text("INSERT INTO users VALUES (DEFAULT, :username, :hash_value, false);")
         db.session.execute(sql, {"username":username, "hash_value":hash_value})
@@ -89,6 +88,7 @@ def signup():
 @app.route("/courses")
 def courses():
     username_id = session["id"]
+
     sql = text("SELECT id, name FROM courses WHERE visible=True ORDER BY id;")
     result = db.session.execute(sql)
     courses_info = result.fetchall()
@@ -142,6 +142,7 @@ def remove_course():
 @app.route("/course/<int:course_id>")
 def course(course_id):
     username_id = session["id"]
+
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
     admin = result.fetchone()[1]
@@ -270,6 +271,7 @@ def add_material():
 @app.route("/course/<int:course_id>/material/<int:material_id>")
 def material(course_id, material_id):
     username_id = session["id"]
+
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
     admin = result.fetchone()[1]
@@ -438,6 +440,7 @@ def enrolled(course_id, student_id):
                            tq_total=len(text_questions),
                            tq_answers=tq_answers,
                            tq_answers_total=len(tq_answers),
+                           mc_questions=mc_questions,
                            mcq_total=len(mc_questions),
                            mcq_answers=mcq_answers,
                            mcq_answers_total=len(mcq_answers))
@@ -445,6 +448,7 @@ def enrolled(course_id, student_id):
 @app.route("/course/<int:course_id>/text_question/<int:text_question_id>")
 def multiple_choice(course_id, text_question_id):
     username_id = session["id"]
+
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
     admin = result.fetchone()[1]
@@ -508,6 +512,7 @@ def change_tq_answer():
 @app.route("/course/<int:course_id>/multiple_choice/<int:mcq_id>")
 def text_question(course_id, mcq_id):
     username_id = session["id"]
+
     sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
     admin = result.fetchone()[1]
@@ -573,7 +578,6 @@ def change_mcq_answer():
     db.session.execute(sql, {"course_id":course_id, "answer":choices[int(answer)-1],
                                       "question_id":question_id})
     db.session.commit()
-
     sql = text("SELECT id, option FROM multiplechoiceoptions WHERE " +
                "multiplechoicequestion_id=:question_id;")
     result = db.session.execute(sql, {"question_id":question_id})
@@ -606,7 +610,7 @@ def answer_tq():
         return render_template("error.html", message="Vastaus on liian pitkä")
     if len(tq_answer) < 1:
         return render_template("error.html", message="Vastaus on liian lyhyt")
-    
+
     sql = text("SELECT id FROM usersquestions WHERE course_id=:course_id AND " +
                "user_id=:user_id AND type=1 AND question_id=:question_id;")
     result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id,
