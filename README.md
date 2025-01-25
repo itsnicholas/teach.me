@@ -16,4 +16,37 @@ Sovelluksen avulla voidaan järjestää verkkokursseja, joissa on tekstimateriaa
 * Opettaja pystyy lisäämään kurssille tekstimateriaalia ja tehtäviä. Tehtävä voi olla ainakin monivalinta tai tekstikenttä, johon tulee kirjoittaa oikea vastaus.
 * Opettaja pystyy näkemään kurssistaan tilaston, keitä opiskelijoita on kurssilla ja mitkä kurssin tehtävät kukin on ratkonut.
 
-## Sovelluksen asennus
+## Sovelluksen käyttöohje
+
+1. Asenna postgres
+  
+2. Kloonaa tämä repositorio
+```
+git clone https://github.com/itsnicholas/teach.me.git
+```
+3. Siirry repositorioon
+```
+cd teach.me
+```
+4. Luo postgresiin tietokanta
+```
+psql -d teachme < schema.sql
+```
+5. Luo projektin juurihakemistoon .env-tiedosto
+```
+DATABASE_URI=postgresql:///teachme
+SECRET_KEY=<salainen-avain>
+```
+6. Aktivoi virtuaaliympäristö
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+7. Asenna sovelluksen riippuvuudet
+```
+pip install -r requirements.txt
+```
+8. Käynnistä sovellus
+```
+flask run
+```
