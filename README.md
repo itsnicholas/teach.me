@@ -19,7 +19,7 @@ Sovelluksen avulla voidaan järjestää verkkokursseja, joissa on tekstimateriaa
 ## Sovelluksen käyttöohje
 
 1. Asenna postgres
-  
+
 2. Kloonaa tämä repositorio
 ```
 git clone https://github.com/itsnicholas/teach.me.git
@@ -30,23 +30,32 @@ cd teach.me
 ```
 4. Luo postgresiin tietokanta
 ```
+psql
+user=# CREATE DATABASE teachme;
+```
+5. Poistu postgresista
+```
+user=# ex
+```
+6. Määritä tietokannan skeema
+```
 psql -d teachme < schema.sql
 ```
-5. Luo projektin juurihakemistoon .env-tiedosto
+7. Luo projektin juurihakemistoon .env-tiedosto
 ```
-DATABASE_URI=postgresql:///teachme
+DATABASE_URL=postgresql:///teachme
 SECRET_KEY=<salainen-avain>
 ```
-6. Aktivoi virtuaaliympäristö
+8. Aktivoi virtuaaliympäristö
 ```
 python3 -m venv venv
 source venv/bin/activate
 ```
-7. Asenna sovelluksen riippuvuudet
+9. Asenna sovelluksen riippuvuudet
 ```
 pip install -r requirements.txt
 ```
-8. Käynnistä sovellus
+10. Käynnistä sovellus
 ```
 flask run
 ```
