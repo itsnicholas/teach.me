@@ -20,7 +20,7 @@ CREATE TABLE userscourses (
 CREATE TABLE materials (
     id SERIAL PRIMARY KEY,
     course_id INTEGER REFERENCES courses NOT NULL,
-    text TEXT,
+    material TEXT,
     visible BOOLEAN
 );
 

@@ -12,18 +12,21 @@ Olet kirjautunut nimellä
 <b>{{ session.username }}</b>
 <hr>
 <h3>Kurssilista:</h3>
-{% for course in courses_info %}
-{{ course.id }}.
-<a href="/course/{{ course.id }}">{{ course.name }}</a>
-{% if admin %}
-<form action="/remove_course" method="POST">
-    <input type="submit" value="Poista kurssi">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="course_id" value="{{ course.id }}">
-</form>
-{% endif %}
-<br>
-{% endfor %}
+<ul>
+    {% for course in courses_info %}
+	<li>
+		<a href="/course/{{ course.id }}">{{ course.name }}</a>
+        {% if admin %}
+        <form action="/remove_course" method="POST">
+            <input type="submit" value="Poista kurssi">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="course_id" value="{{ course.id }}">
+        </form>
+        {% endif %}
+	</li>
+    <br>
+    {% endfor %}
+</ul>
 {% if admin %}
 <hr>
 <h3>Lisää kurssi:</h3>
