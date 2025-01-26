@@ -5,6 +5,12 @@ CREATE TABLE users (
     admin BOOLEAN NOT NULL
 );
 
+CREATE TABLE courses (
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    visible BOOLEAN
+);
+
 CREATE TABLE userscourses (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users NOT NULL,
@@ -15,12 +21,6 @@ CREATE TABLE materials (
     id SERIAL PRIMARY KEY,
     course_id INTEGER REFERENCES courses NOT NULL,
     text TEXT,
-    visible BOOLEAN
-);
-
-CREATE TABLE courses (
-    id SERIAL PRIMARY KEY,
-    name TEXT,
     visible BOOLEAN
 );
 
