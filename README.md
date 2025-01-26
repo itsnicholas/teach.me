@@ -35,7 +35,7 @@ user=# CREATE DATABASE teachme;
 ```
 5. Poistu postgresista
 ```
-user=# ex
+user=# exit
 ```
 6. Määritä tietokannan skeema
 ```
