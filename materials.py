@@ -19,7 +19,7 @@ def add_material(course_id, material_answer):
     db.session.execute(sql, {"course_id":course_id, "material_answer":material_answer})
     db.session.commit()
 
-def material_page(course_id, material_id, username_id):
+def get_material_page(course_id, material_id, username_id):
     admin = users.get_user(username_id)
     sql = text("SELECT id, material FROM materials WHERE id=:material_id AND course_id=:course_id;")
     result = db.session.execute(sql, {"material_id":material_id, "course_id":course_id})

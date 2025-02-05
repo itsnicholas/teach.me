@@ -8,239 +8,239 @@
 </div>
 <br>
 <div class="content">
-{% if admin %}
-<fieldset class="form">
-    <form action="/change_ct" method="POST">
-        <legend>
-            <b>Muuta kurssin nimeä:</b>
-        </legend>
-        (1-50 merkkiä)
-        <br>
-        <textarea name="course_title" rows="1" cols="40"></textarea>
-        <br>
-        <input type="submit" value="Päivitä">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <input type="hidden" name="course_id" value="{{ course_info.id }}">
-    </form>
-</fieldset>
-<h3>Ilmoittautuneet opiskelijat:</h3>
-{% if course_enrolled %}
-<ul>
-    {% for student in course_enrolled %}
-    <li>
-        <a href="/course/{{ course_info.id }}/enrolled/{{ student.id }}">
-            {{ student.username }}
-        </a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
-<hr>
-{% endif %}
-{% if not admin %}
-{% if join %}
-<h3>Olet ilmoittautunut!</h3>
-{% else %}
-<h3>Ilmoittaudu kurssille:</h3>
-<form action="/enrol" method="POST">
-    <input type="submit" value="Ilmoittaudu">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="course_id" value="{{ course_info.id }}">
-</form>
-{% endif %}
-{% endif %}
-<h3>Materiaali:</h3>
-{% if materials %}
-{% if admin %}
-{% for material in materials %}
-<fieldset>
-<p>{{ material.material }}</p>
-<a href="/course/{{ course_info.id }}/material/{{ material.id }}">Muuta materiaali</a>
-<form action="/remove_material" method="POST">
-    <input type="submit" value="Poista materiaali">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <input type="hidden" name="course_id" value="{{ course_info.id }}">
-    <input type="hidden" name="material_id" value="{{ material.id }}">
-</form>
-</fieldset>
-{% endfor %}
-<br>
-{% else %}
-{% for material in materials %}
-<p>{{ material.material }}</p>
-{% endfor %}
-{% endif %}
-{% endif %}
-{% if admin %}
-<fieldset class="form">
-    <form action="/add_material" method="POST">
-        <legend>
-            <b>Lisää materiaalia:</b>
-        </legend>
-        (1-500 merkkiä)
-        <br>
-        <textarea name="material_answer" rows="3" cols="40"></textarea>
-        <br>
-        <input type="submit" value="Lisää">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <input type="hidden" name="course_id" value="{{ course_info.id }}">
-    </form>
-</fieldset>
-{% endif %}
-{% if join %}
-<hr>
-<h3>Tehdyt tehtävät:</h3>
-<b>Tekstikysymykset: ({{ tq_answers_total }}/{{ tq_total }})</b>
-<br>
-<ul>
-    {% for tq_answer in tq_answers %}
-    <li>
-        <font color="green">{{ tq_answer.question }}</font>
-        <br>
-    </li>
-    {% endfor %}
-</ul>
-<b>Monivalintakysymykset: ({{ mcq_answers_total }}/{{ mcq_total }})</b>
-<br>
-<ul>
-    {% for mcq_answer in mcq_answers %}
-    <li>
-        <font color="green">{{ mcq_answer.question }}</font>
-        <br>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
-{% if join or admin %}
-<hr>
-<h3>Tekstikysymykset:</h3>
-<ul>
-    {% for text_question in text_questions %}
-    <li>
-        <a href="/course/{{ course_info.id }}/text_question/{{ text_question.id }}">
-            {{ text_question.question }}
-        </a>
-        {% if admin %}
-        <form action="/remove_tq" method="POST">
-            <input type="submit" value="Poista kysymys">
+    {% if admin %}
+    <fieldset class="form">
+        <form action="/change_ct" method="POST">
+            <legend>
+                <b>Muuta kurssin nimeä:</b>
+            </legend>
+            (1-50 merkkiä)
+            <br>
+            <textarea name="course_title" rows="1" cols="40"></textarea>
+            <br>
+            <input type="submit" value="Päivitä">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <input type="hidden" name="course_id" value="{{ course_info.id }}">
-            <input type="hidden" name="tq_id" value="{{ text_question.id }}">
         </form>
-        {% endif %}
-        <br>
-    </li>
-    {% endfor %}
-</ul>
-{% if admin %}
-<fieldset class="form">
-    <form action="/add_tq" method="POST">
-        <legend>
-            <b>Lisää tekstikysymys</b>
-        </legend>
-        <br>
-        Kysymys: (1-100 merkkiä)
-        <br>
-        <textarea name="question" rows="3" cols="40"></textarea>
-        <br>
-        Vastaus: (1-200 merkkiä)
-        <br>
-        <textarea name="answer" rows="3" cols="40"></textarea>
-        <br>
-        <input type="submit" value="Lisää">
+    </fieldset>
+    <h3>Ilmoittautuneet opiskelijat:</h3>
+    {% if course_enrolled %}
+    <ul>
+        {% for student in course_enrolled %}
+        <li>
+            <a href="/course/{{ course_info.id }}/enrolled/{{ student.id }}">
+                {{ student.username }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <hr>
+    {% endif %}
+    {% if not admin %}
+    {% if join %}
+    <h3>Olet ilmoittautunut!</h3>
+    {% else %}
+    <h3>Ilmoittaudu kurssille:</h3>
+    <form action="/enrol" method="POST">
+        <input type="submit" value="Ilmoittaudu">
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <input type="hidden" name="course_id" value="{{ course_info.id }}">
     </form>
-</fieldset>
-{% endif %}
-<hr>
-<h3>Monivalintakysymykset:</h3>
-<ul>
-    {% for mcq in mc_questions %}
-    <li>
-        <a href="/course/{{ course_info.id }}/multiple_choice/{{ mcq.id }}">
-            {{ mcq.question }}
-        </a>
-        {% if admin %}
-        <form action="/remove_mcq" method="POST">
-            <input type="submit" value="Poista kysymys">
+    {% endif %}
+    {% endif %}
+    <h3>Materiaali:</h3>
+    {% if materials %}
+    {% if admin %}
+    {% for material in materials %}
+    <fieldset>
+        <p>{{ material.material }}</p>
+        <a href="/course/{{ course_info.id }}/material/{{ material.id }}">Muuta materiaali</a>
+        <form action="/remove_material" method="POST">
+            <input type="submit" value="Poista materiaali">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <input type="hidden" name="course_id" value="{{ course_info.id }}">
-            <input type="hidden" name="mcq_id" value="{{ mcq.id }}">
+            <input type="hidden" name="material_id" value="{{ material.id }}">
         </form>
-        {% endif %}
-        <br>
-    </li>
+    </fieldset>
     {% endfor %}
-</ul>
-{% if admin %}
-<fieldset class="form">
-    <form action="/add_mcq" method="POST">
-        <legend>
-            <b>Lisää monivalintakysymys</b>
-        </legend>
-        <br>
-        Kysymys: (1-100 merkkiä)
-        <br>
-        <textarea name="question" rows="3" cols="40"></textarea>
-        <br>
-        Vastaus: (1-50 merkkiä)
-        <br>
-        1. vaihtoehto
-        <br>
-        <textarea name="choice" rows="1" cols="40"></textarea>
-        <br>
-        2. vaihtoehto
-        <br>
-        <textarea name="choice" rows="1" cols="40"></textarea>
-        <br>
-        3. vaihtoehto
-        <br>
-        <textarea name="choice" rows="1" cols="40"></textarea>
-        <br>
-        4. vaihtoehto
-        <br>
-        <textarea name="choice" rows="1" cols="40"></textarea>
-        <br>
-        Oikea vastaus:
-        <br>
-        <input
-            type="radio"
-            name="answer"
-            id="choice1"
-            value="1"
-            checked="checked"
-        >
-        <label for="choice1">1. vaihtoehto</label>
-        <input
-            type="radio"
-            name="answer"
-            id="choice2"
-            value="2"
-        >
-        <label for="choice2">2. vaihtoehto</label>
-        <input
-            type="radio"
-            name="answer"
-            id="choice3"
-            value="3"
-        >
-        <label for="choice3">3. vaihtoehto</label>
-        <input
-            type="radio"
-            name="answer"
-            id="choice4"
-            value="4"
-        >
-        <label for="choice4">4. vaihtoehto</label>
-        <br>
-        <input type="submit" value="Lisää">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <input type="hidden" name="course_id" value="{{ course_info.id }}">
-    </form>
-</fieldset>
-{% endif %}
-{% endif %}
+    <br>
+    {% else %}
+    {% for material in materials %}
+    <p>{{ material.material }}</p>
+    {% endfor %}
+    {% endif %}
+    {% endif %}
+    {% if admin %}
+    <fieldset class="form">
+        <form action="/add_material" method="POST">
+            <legend>
+                <b>Lisää materiaalia:</b>
+            </legend>
+            (1-500 merkkiä)
+            <br>
+            <textarea name="material_answer" rows="3" cols="40"></textarea>
+            <br>
+            <input type="submit" value="Lisää">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="course_id" value="{{ course_info.id }}">
+        </form>
+    </fieldset>
+    {% endif %}
+    {% if join %}
+    <hr>
+    <h3>Tehdyt tehtävät:</h3>
+    <b>Tekstikysymykset: ({{ tq_answers_total }}/{{ tq_total }})</b>
+    <br>
+    <ul>
+        {% for tq_answer in tq_answers %}
+        <li>
+            <font color="green">{{ tq_answer.question }}</font>
+            <br>
+        </li>
+        {% endfor %}
+    </ul>
+    <b>Monivalintakysymykset: ({{ mcq_answers_total }}/{{ mcq_total }})</b>
+    <br>
+    <ul>
+        {% for mcq_answer in mcq_answers %}
+        <li>
+            <font color="green">{{ mcq_answer.question }}</font>
+            <br>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if join or admin %}
+    <hr>
+    <h3>Tekstikysymykset:</h3>
+    <ul>
+        {% for text_question in text_questions %}
+        <li>
+            <a href="/course/{{ course_info.id }}/text_question/{{ text_question.id }}">
+                {{ text_question.question }}
+            </a>
+            {% if admin %}
+            <form action="/remove_tq" method="POST">
+                <input type="submit" value="Poista kysymys">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="hidden" name="course_id" value="{{ course_info.id }}">
+                <input type="hidden" name="tq_id" value="{{ text_question.id }}">
+            </form>
+            {% endif %}
+            <br>
+        </li>
+        {% endfor %}
+    </ul>
+    {% if admin %}
+    <fieldset class="form">
+        <form action="/add_tq" method="POST">
+            <legend>
+                <b>Lisää tekstikysymys</b>
+            </legend>
+            <br>
+            Kysymys: (1-100 merkkiä)
+            <br>
+            <textarea name="question" rows="3" cols="40"></textarea>
+            <br>
+            Vastaus: (1-200 merkkiä)
+            <br>
+            <textarea name="answer" rows="3" cols="40"></textarea>
+            <br>
+            <input type="submit" value="Lisää">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="course_id" value="{{ course_info.id }}">
+        </form>
+    </fieldset>
+    {% endif %}
+    <hr>
+    <h3>Monivalintakysymykset:</h3>
+    <ul>
+        {% for mcq in mc_questions %}
+        <li>
+            <a href="/course/{{ course_info.id }}/multiple_choice/{{ mcq.id }}">
+                {{ mcq.question }}
+            </a>
+            {% if admin %}
+            <form action="/remove_mcq" method="POST">
+                <input type="submit" value="Poista kysymys">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="hidden" name="course_id" value="{{ course_info.id }}">
+                <input type="hidden" name="mcq_id" value="{{ mcq.id }}">
+            </form>
+            {% endif %}
+            <br>
+        </li>
+        {% endfor %}
+    </ul>
+    {% if admin %}
+    <fieldset class="form">
+        <form action="/add_mcq" method="POST">
+            <legend>
+                <b>Lisää monivalintakysymys</b>
+            </legend>
+            <br>
+            Kysymys: (1-100 merkkiä)
+            <br>
+            <textarea name="question" rows="3" cols="40"></textarea>
+            <br>
+            Vastaus: (1-50 merkkiä)
+            <br>
+            1. vaihtoehto
+            <br>
+            <textarea name="choice" rows="1" cols="40"></textarea>
+            <br>
+            2. vaihtoehto
+            <br>
+            <textarea name="choice" rows="1" cols="40"></textarea>
+            <br>
+            3. vaihtoehto
+            <br>
+            <textarea name="choice" rows="1" cols="40"></textarea>
+            <br>
+            4. vaihtoehto
+            <br>
+            <textarea name="choice" rows="1" cols="40"></textarea>
+            <br>
+            Oikea vastaus:
+            <br>
+            <input
+                type="radio"
+                name="answer"
+                id="choice1"
+                value="1"
+                checked="checked"
+            >
+            <label for="choice1">1. vaihtoehto</label>
+            <input
+                type="radio"
+                name="answer"
+                id="choice2"
+                value="2"
+            >
+            <label for="choice2">2. vaihtoehto</label>
+            <input
+                type="radio"
+                name="answer"
+                id="choice3"
+                value="3"
+            >
+            <label for="choice3">3. vaihtoehto</label>
+            <input
+                type="radio"
+                name="answer"
+                id="choice4"
+                value="4"
+            >
+            <label for="choice4">4. vaihtoehto</label>
+            <br>
+            <input type="submit" value="Lisää">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="course_id" value="{{ course_info.id }}">
+        </form>
+    </fieldset>
+    {% endif %}
+    {% endif %}
 </div>
 <br>
 <a href="/courses" class="nav">Takaisin</a>

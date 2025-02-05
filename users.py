@@ -1,6 +1,6 @@
 import secrets
 from db import db
-from flask import session
+from flask import session, flash
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -26,7 +26,7 @@ def login(username, password):
 def logout():
     del session["username"]
 
-def signup(username, password):
+def signup(username, password, admin):
     sql = text("SELECT id, password FROM users WHERE username=:username;")
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()
@@ -37,11 +37,12 @@ def signup(username, password):
     hash_value = generate_password_hash(password)
 
     try:
-        sql = text("INSERT INTO users VALUES (DEFAULT, :username, :hash_value, false);")
-        db.session.execute(sql, {"username":username, "hash_value":hash_value})
+        sql = text("INSERT INTO users VALUES (DEFAULT, :username, :hash_value, :admin);")
+        db.session.execute(sql, {"username":username, "hash_value":hash_value, "admin":admin})
         db.session.commit()
     except Exception:
         return False
+    flash("Tili luotu!")
     return True
 
 def get_user(username_id):

@@ -11,13 +11,32 @@
 <br>
 <div class="content">
     <form action="/signup" method="POST" onsubmit="return check(this)">
-        <p>Tunnus (1-16 merkkiä):
+        <p>
+            Tunnus (1-16 merkkiä):
             <br>
             <input type="text" name="username">
         </p>
-        <p>Salasana (8-16 merkkiä):
+        <p>
+            Salasana (8-16 merkkiä):
             <br>
             <input type="password" name="password">
+        </p>
+        <p>
+            <input
+                type="radio"
+                name="admin"
+                id="choice1"
+                value="false"
+                checked="checked"
+            >
+            <label for="choice1">Opiskelija</label>
+            <input
+                type="radio"
+                name="admin"
+                id="choice2"
+                value="true"
+            >
+            <label for="choice2">Opettaja</label>
         </p>
         <input type="submit" value="Luo tili">
     </form>

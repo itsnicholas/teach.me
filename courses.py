@@ -8,7 +8,7 @@ def get_courses_info(course_id):
     course_info = result.fetchone()
     return course_info
 
-def course_list(username_id):
+def get_course_list(username_id):
     sql = text("SELECT id, name FROM courses WHERE visible=True ORDER BY id;")
     result = db.session.execute(sql)
     courses_info = result.fetchall()
@@ -30,7 +30,7 @@ def remove_course(course_id):
     db.session.execute(sql, {"course_id":course_id})
     db.session.commit()
 
-def course(username_id, course_id):
+def get_course(username_id, course_id):
     admin = users.get_user(username_id)
     course_info = get_courses_info(course_id)
     sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:course_id;")

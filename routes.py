@@ -42,6 +42,7 @@ def signup():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        admin = request.form["admin"]
 
         message = None
         if len(username) > 16:
@@ -56,15 +57,15 @@ def signup():
         if message:
             return render_template("signup.html", message=message)
 
-        if users.signup(username, password):
+        if users.signup(username, password, admin):
             return redirect("/")
         else:
             return render_template("signup.html", message="Käyttäjätunnus on käytössä" +
                                     " - kokeile toista käyttäjätunnusta")
 
 @app.route("/courses")
-def course_list():
-    courses_info, admin = courses.course_list(users.user_id())
+def get_course_list():
+    courses_info, admin = courses.get_course_list(users.user_id())
     return render_template("courses.html", courses_info=courses_info, admin=admin)
 
 @app.route("/add_course", methods=["POST"])
@@ -103,9 +104,9 @@ def remove_course():
     return redirect("/courses")
 
 @app.route("/course/<int:course_id>")
-def course(course_id):
+def get_course(course_id):
 
-    course_data = courses.course(users.user_id(), course_id)
+    course_data = courses.get_course(users.user_id(), course_id)
 
     return render_template("course.html",
                            course_info=course_data['course_info'], join=course_data['join'],
@@ -199,9 +200,9 @@ def add_material():
     return redirect("/course/" + str(course_id))
 
 @app.route("/course/<int:course_id>/material/<int:material_id>")
-def material_page(course_id, material_id):
+def get_material_page(course_id, material_id):
 
-    admin, material_text = materials.material_page(course_id, material_id, users.user_id())
+    admin, material_text = materials.get_material_page(course_id, material_id, users.user_id())
 
     return render_template("material.html", material_id=material_id, course_id=course_id,
                            material_text=material_text, admin=admin)
@@ -342,9 +343,9 @@ def enrolled(course_id, student_id):
                            mcq_answers_total=len(enrolled_data['mcq_answers']))
 
 @app.route("/course/<int:course_id>/text_question/<int:text_question_id>")
-def multiple_choice(course_id, text_question_id):
+def get_text_question(course_id, text_question_id):
 
-    question, admin = questions.multiple_choice(users.user_id(), text_question_id)
+    question, admin = questions.get_text_question(users.user_id(), text_question_id)
 
     return render_template("text_question.html",
                            course_id=course_id, question=question, admin=admin)
@@ -400,9 +401,9 @@ def change_tq_answer():
     return redirect("/course/" + str(course_id))
 
 @app.route("/course/<int:course_id>/multiple_choice/<int:mcq_id>")
-def text_question(course_id, mcq_id):
+def get_multiple_choice(course_id, mcq_id):
 
-    admin, choices, question = questions.text_question(users.user_id(), mcq_id)
+    admin, choices, question = questions.get_multiple_choice(users.user_id(), mcq_id)
 
     return render_template("multiple_choice.html",
                            course_id=course_id, choices=choices,
