@@ -46,9 +46,10 @@ def signup(username, password, admin):
     return True
 
 def get_user(username_id):
-    sql = text("SELECT id, admin FROM users WHERE id=:username_id;")
+    sql = text("SELECT id, username, admin FROM users WHERE id=:username_id;")
     result = db.session.execute(sql, {"username_id":username_id})
-    user = result.fetchone()[1]
+    user = result.fetchone()
+    print(user, "Tässä user")
     return user
 
 def get_user_session():

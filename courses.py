@@ -12,7 +12,7 @@ def get_course_list(username_id):
     sql = text("SELECT id, name FROM courses WHERE visible=True ORDER BY id;")
     result = db.session.execute(sql)
     courses_info = result.fetchall()
-    admin = users.get_user(username_id)
+    admin = users.get_user(username_id)[2]
     return courses_info, admin
 
 def add_course(course_name):
@@ -31,7 +31,7 @@ def remove_course(course_id):
     db.session.commit()
 
 def get_course(username_id, course_id):
-    admin = users.get_user(username_id)
+    admin = users.get_user(username_id)[2]
     course_info = get_courses_info(course_id)
     sql = text("SELECT id FROM userscourses WHERE user_id=:username_id AND course_id=:course_id;")
     result = db.session.execute(sql, {"username_id":username_id, "course_id":course_id})
@@ -70,7 +70,7 @@ def enrol(user_id, course_id):
 
 def enrolled(course_id, username_id):
     course_info = get_courses_info(course_id)
-    student = users.get_user(username_id)
+    student = users.get_user(username_id)[1]
     text_questions = questions.get_text_questions(course_id)
     mc_questions = questions.get_mc_questions(course_id)
     tq_answers = questions.get_tq_answers(course_id, username_id)

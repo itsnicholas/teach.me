@@ -66,7 +66,7 @@ def remove_mcq(mcq_id, course_id):
     db.session.commit()
 
 def get_text_question(username_id, text_question_id):
-    admin = users.get_user(username_id)
+    admin = users.get_user(username_id)[2]
     sql = text("SELECT id, course_id, answer, question FROM textquestions WHERE" +
                " id=:text_question_id AND visible=True;")
     result = db.session.execute(sql, {"text_question_id":text_question_id})
@@ -88,7 +88,7 @@ def change_tq_answer(question_id, course_id, tq_answer):
     db.session.commit()
 
 def get_multiple_choice(username_id, mcq_id):
-    admin = users.get_user(username_id)
+    admin = users.get_user(username_id)[2]
     sql = text("SELECT id, option FROM multiplechoiceoptions WHERE " +
                "multiplechoicequestion_id=:mcq_id;")
     result = db.session.execute(sql, {"mcq_id":mcq_id})
